@@ -3,13 +3,13 @@
 For Meteor 3 you need to use the beta version of `jorgenvatle:vite-bundler` package to use Vite as the bundler for your Meteor project:
 
 ```bash
-meteor add jorgenvatle:vite-bundler@2.0.0-beta.12
+meteor add jorgenvatle:vite-bundler
 ```
 
 Also, you need to install Vite as a dev dependency in your project:
 
 ```bash
-meteor npm i -D vite@4
+meteor npm i -D vite
 meteor npm i meteor-vite
 ```
 
