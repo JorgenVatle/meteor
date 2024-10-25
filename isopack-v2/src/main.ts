@@ -6,8 +6,13 @@ declare const globalThis: {
 
 type PackageScope = 'server' | 'client';
 type ScopeOption = PackageScope | PackageScope[];
+const packages = new Set<Package>();
 
 class Package {
+    constructor(public readonly name: string) {
+        packages.add(this);
+    }
+    
     public describe(config: {
         summary: string,
         version: string;
@@ -39,7 +44,7 @@ class Package {
 
 
 async function parse(packageName: string) {
-    globalThis.Package = new Package();
+    globalThis.Package = new Package(packageName);
     
     await import(packagePath(packageName));
 }
