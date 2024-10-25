@@ -1,3 +1,4 @@
+import * as process from 'node:process';
 import { build } from 'tsup';
 
 
@@ -37,7 +38,13 @@ class Package {
             return;
         }
         
-        await parse(packageName.split('@')[0]);
+        const pkg = await parse(packageName.split('@')[0]);
+        
+        if (!pkg) {
+            return
+        }
+        
+        this.dependencies.add(pkg);
     }
     
     public addAssets(assets: string | string[]) {
@@ -87,6 +94,7 @@ async function parse(packageName: string) {
     if (packages.has(packageName)) {
         return;
     }
+    
     globalThis.Package = new Package(packageName);
     globalThis.Npm = new Npm();
     globalThis.Cordova = new Cordova();
@@ -95,6 +103,8 @@ async function parse(packageName: string) {
         console.warn(`Failed to load package: ${packageName}`);
         console.error(error);
     });
+    
+    return globalThis.Package;
 }
 
 function packagePath(name: string) {
