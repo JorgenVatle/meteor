@@ -46,6 +46,10 @@ class Package {
     
     }
     
+    public onTest(handler: (api: Package) => void) {
+        handler(this);
+    }
+    
 }
 
 class Npm {
