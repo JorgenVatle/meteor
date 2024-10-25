@@ -34,6 +34,10 @@ class Package {
     
     }
     
+    public addFiles(files: string) {
+    
+    }
+    
     public imply(packageName: string) {
     
     
