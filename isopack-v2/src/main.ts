@@ -67,7 +67,7 @@ async function parse(packageName: string) {
     globalThis.Package = new Package(packageName);
     globalThis.Npm = new Npm();
     
-    await import(packagePath(packageName)).catch(() => console.warn(`Failed to load package: ${packageName}`));
+    await import(packagePath(packageName)).catch((error) => console.warn(`Failed to load package: ${packageName}:`, error));
 }
 
 function packagePath(name: string) {
