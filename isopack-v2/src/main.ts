@@ -4,15 +4,23 @@ declare const globalThis: {
     Package: any
 }
 
+class Package {
+    public describe(config: {
+        summary: string,
+        version: string;
+    }) {
+        console.log(config);
+    }
+    
+    public onUse(handler: (api: Package) => void) {
+        handler(this);
+    }
+}
+
+
+
 async function parse(packageName: string) {
-    globalThis.Package = {
-        describe(config: { summary: string, version: string }) {
-            console.log(config);
-        },
-        onUse() {
-        
-        }
-    };
+    globalThis.Package = new Package();
     
     await import(packagePath(packageName));
 }
