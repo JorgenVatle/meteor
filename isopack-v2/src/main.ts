@@ -70,12 +70,17 @@ class Npm {
     }
 }
 
+class Cordova extends Npm {
+
+}
+
 async function parse(packageName: string) {
     if (packages.has(packageName)) {
         return;
     }
     globalThis.Package = new Package(packageName);
     globalThis.Npm = new Npm();
+    globalThis.Cordova = new Cordova();
     
     await import(packagePath(packageName)).catch((error) => {
         console.warn(`Failed to load package: ${packageName}`);
@@ -101,6 +106,7 @@ compilePackages().then(() => {
 declare const globalThis: {
     Package: Package;
     Npm: Npm;
+    Cordova: Cordova;
 }
 
 type PackageScope = 'server' | 'client';
