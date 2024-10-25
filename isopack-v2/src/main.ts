@@ -9,6 +9,8 @@ type ScopeOption = PackageScope | PackageScope[];
 const packages = new Set<Package>();
 
 class Package {
+    public readonly dependencies = new Set<Package>();
+    
     constructor(public readonly name: string) {
         packages.add(this);
     }
@@ -24,8 +26,10 @@ class Package {
         handler(this);
     }
     
-    public use(packages: string[], contexts: ScopeOption) {
-    
+    public async use(packages: string[], contexts: ScopeOption) {
+        for (const packageName of packages) {
+            await parse(packageName);
+        }
     }
     
     public addAssets(assets: string | string[]) {
