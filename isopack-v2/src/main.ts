@@ -107,6 +107,10 @@ function packagePath(name: string) {
 
 async function compilePackages() {
     await parse('ddp');
+    
+    for (const dependency of globalThis.Package.dependencies) {
+        await parse(dependency);
+    }
 }
 
 compilePackages().then(() => {
