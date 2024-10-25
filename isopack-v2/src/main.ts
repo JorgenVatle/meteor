@@ -1,13 +1,13 @@
 import { build } from 'tsup';
 
 
-const packages = new Set<Package>();
+const packages = new Map<string, Package>();
 
 class Package {
     public readonly dependencies = new Set<Package>();
     
     constructor(public readonly name: string) {
-        packages.add(this);
+        packages.set(name, this);
     }
     
     public describe(config: {
@@ -60,6 +60,9 @@ class Npm {
 }
 
 async function parse(packageName: string) {
+    if (packages.has(packageName)) {
+        return;
+    }
     globalThis.Package = new Package(packageName);
     globalThis.Npm = new Npm();
     
