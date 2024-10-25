@@ -5,7 +5,7 @@ import { build } from 'tsup';
 const packages = new Map<string, Package>();
 
 class Package {
-    public readonly dependencies = new Set<Package>();
+    public readonly dependencies = new Set<string>();
     
     constructor(public readonly name: string) {
         packages.set(name, this);
@@ -22,29 +22,23 @@ class Package {
         handler(this);
     }
     
-    public async use(packages: string[], contexts: ScopeOption) {
+    public use(packages: string[], contexts: ScopeOption) {
         if (!Array.isArray(packages)) {
-            await this.loadDependency(packages);
+            this.loadDependency(packages);
             return;
         }
         for (const packageName of packages) {
-            await this.loadDependency(packageName);
+            this.loadDependency(packageName);
         }
     }
     
-    protected async loadDependency(packageName: string) {
+    protected loadDependency(packageName: string) {
         if (packageName.includes(':')) {
             console.warn(`Cannot load external dependency! ${packageName}`);
             return;
         }
         
-        const pkg = await parse(packageName.split('@')[0]);
-        
-        if (!pkg) {
-            return
-        }
-        
-        this.dependencies.add(pkg);
+        this.dependencies.add(packageName.split('@')[0]);
     }
     
     public addAssets(assets: string | string[]) {
