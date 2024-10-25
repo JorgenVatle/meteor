@@ -18,7 +18,7 @@ async function parse(packageName: string) {
 }
 
 function packagePath(name: string) {
-    return `../../../packages/${name}/package.js`;
+    return `${__dirname}/../../packages/${name}/package.js`;
 }
 
 async function compilePackages() {
