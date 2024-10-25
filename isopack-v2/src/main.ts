@@ -3,6 +3,7 @@ import { build } from 'tsup';
 
 
 const packages = new Map<string, Package>();
+const loadRequests: Promise<void>[] = [];
 
 class Package {
     public readonly dependencies = new Set<Package>();
@@ -38,13 +39,15 @@ class Package {
             return;
         }
         
-        const pkg = await parse(packageName.split('@')[0]);
+        await Promise.all(loadRequests);
+        loadRequests.push(parse(packageName.split('@')[0]).then((pkg) => {
+            if (!pkg) {
+                return
+            }
+            
+            this.dependencies.add(pkg);
+        }))
         
-        if (!pkg) {
-            return
-        }
-        
-        this.dependencies.add(pkg);
     }
     
     public addAssets(assets: string | string[]) {
