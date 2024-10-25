@@ -1,35 +1,7 @@
 import { build } from 'tsup';
 
-declare const globalThis: {
-    Package: Package;
-    Npm: Npm;
-}
 
-type PackageScope = 'server' | 'client';
-type ScopeOption = PackageScope | PackageScope[];
 const packages = new Set<Package>();
-
-async function parse(packageName: string) {
-    globalThis.Package = new Package(packageName);
-    globalThis.Npm = new Npm();
-    
-    await import(packagePath(packageName));
-}
-
-function packagePath(name: string) {
-    return `${__dirname}/../../packages/${name}/package.js`;
-}
-
-async function compilePackages() {
-    await parse('ddp');
-}
-
-compilePackages().then(() => {
-    console.log('Finished');
-    console.log(packages);
-}).catch((error) => {
-    console.error(error);
-});
 
 class Package {
     public readonly dependencies = new Set<Package>();
@@ -75,3 +47,33 @@ class Npm {
         this.dependencies = dependencies;
     }
 }
+
+async function parse(packageName: string) {
+    globalThis.Package = new Package(packageName);
+    globalThis.Npm = new Npm();
+    
+    await import(packagePath(packageName));
+}
+
+function packagePath(name: string) {
+    return `${__dirname}/../../packages/${name}/package.js`;
+}
+
+async function compilePackages() {
+    await parse('ddp');
+}
+
+compilePackages().then(() => {
+    console.log('Finished');
+    console.log(packages);
+}).catch((error) => {
+    console.error(error);
+});
+
+declare const globalThis: {
+    Package: Package;
+    Npm: Npm;
+}
+
+type PackageScope = 'server' | 'client';
+type ScopeOption = PackageScope | PackageScope[];
