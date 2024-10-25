@@ -42,6 +42,10 @@ class Package {
     
     }
     
+    public mainModule(path: string) {
+    
+    }
+    
 }
 
 class Npm {
