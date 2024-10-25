@@ -55,6 +55,8 @@ class Package {
         // handler(this);
     }
     
+    public registerBuildPlugin() {}
+    
 }
 
 class Npm {
