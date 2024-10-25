@@ -4,6 +4,9 @@ declare const globalThis: {
     Package: any
 }
 
+type PackageScope = 'server' | 'client';
+type ScopeOption = PackageScope | PackageScope[];
+
 class Package {
     public describe(config: {
         summary: string,
@@ -14,6 +17,22 @@ class Package {
     
     public onUse(handler: (api: Package) => void) {
         handler(this);
+    }
+    
+    public use(packages: string[], contexts: ScopeOption) {
+    
+    }
+    
+    public addAssets(assets: string | string[]) {
+    
+    }
+    
+    public imply(packageName: string) {
+    
+    }
+    
+    public export(name: string, context: ScopeOption) {
+    
     }
 }
 
