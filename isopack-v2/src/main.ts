@@ -65,6 +65,9 @@ class Npm {
     depends(dependencies: Record<string, string>) {
         this.dependencies = dependencies;
     }
+    strip() {
+    
+    }
 }
 
 async function parse(packageName: string) {
