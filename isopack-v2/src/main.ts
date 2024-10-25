@@ -36,6 +36,7 @@ class Package {
     
     public imply(packageName: string) {
     
+    
     }
     
     public export(name: string, context: ScopeOption) {
@@ -66,7 +67,7 @@ async function parse(packageName: string) {
     globalThis.Package = new Package(packageName);
     globalThis.Npm = new Npm();
     
-    await import(packagePath(packageName));
+    await import(packagePath(packageName)).catch(() => console.warn(`Failed to load package: ${packageName}`));
 }
 
 function packagePath(name: string) {
