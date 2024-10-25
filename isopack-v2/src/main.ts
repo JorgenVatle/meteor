@@ -22,6 +22,9 @@ class Package {
     }
     
     public async use(packages: string[], contexts: ScopeOption) {
+        if (!Array.isArray(packages)) {
+            await parse(packages);
+        }
         for (const packageName of packages) {
             await parse(packageName);
         }
