@@ -58,7 +58,8 @@ async function compilePackages() {
 }
 
 compilePackages().then(() => {
-    console.log('Finished')
+    console.log('Finished');
+    console.log(packages);
 }).catch((error) => {
     console.error(error);
 });
