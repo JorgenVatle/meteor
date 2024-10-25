@@ -23,12 +23,21 @@ class Package {
     
     public async use(packages: string[], contexts: ScopeOption) {
         if (!Array.isArray(packages)) {
-            await parse(packages);
+            await this.loadDependency(packages);
             return;
         }
         for (const packageName of packages) {
-            await parse(packageName);
+            await this.loadDependency(packageName);
         }
+    }
+    
+    protected async loadDependency(packageName: string) {
+        if (packageName.includes(':')) {
+            console.warn(`Cannot load external dependency! ${packageName}`);
+            return;
+        }
+        
+        await parse(packageName.split('@')[0]);
     }
     
     public addAssets(assets: string | string[]) {
