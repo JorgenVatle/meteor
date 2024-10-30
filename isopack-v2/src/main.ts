@@ -169,6 +169,7 @@ async function buildPackage(parsedPackage: Package) {
         skipNodeModulesBundle: true,
         external: ['esbuild'],
         config: false,
+        tsconfig: 'tsconfig.packages.json',
     })
 }
 
