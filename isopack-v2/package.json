@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "tsup && node dist/src/main.js",
+    "start": "tsup && node dist/src/main.mjs",
     "test": "npm start -w test-app"
   },
-  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
