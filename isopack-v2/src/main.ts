@@ -166,7 +166,7 @@ async function buildPackage(parsedPackage: Package) {
         sourcemap: true,
         splitting: false,
         target: 'node20',
-        format: ['esm', 'cjs'],
+        format: 'esm',
         skipNodeModulesBundle: true,
         external: ['esbuild'],
         config: false,
