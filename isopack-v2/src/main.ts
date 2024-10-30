@@ -122,13 +122,16 @@ function packagePath(name: string) {
 }
 
 async function compilePackages() {
-    const name = process.argv[2];
+    const [_node, _module, ...packages] = process.argv;
     
-    if (!name) {
+    if (!packages.length) {
         throw new Error('you need to specify a package name to compile');
     }
     
-    await parse(name);
+    for (const name of packages) {
+        await parse(name);
+    }
+    
     
     for (const dependency of globalThis.Package.dependencies) {
         await parse(dependency);
