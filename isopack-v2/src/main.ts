@@ -73,6 +73,7 @@ compilePackages().then(async () => {
     Logger.log('Remember to install npm dependencies:\n', [...NpmDependencies.keys()].join(' '));
 }).catch((error) => {
     Logger.error(error);
+    process.exit(1);
 });
 
 async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
