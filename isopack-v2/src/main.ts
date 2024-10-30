@@ -62,13 +62,8 @@ class Package {
     
     }
     
-    public mainModule(path: string, scope?: Scope) {
-        if (scope) {
-            this.entryModule.set(scope, path);
-            return;
-        }
-        this.entryModule.set('server', path);
-        this.entryModule.set('client', path);
+    public mainModule(path: string, scope: Scope = 'common') {
+        this.entryModule.set(scope, path);
     }
     
     public onTest(handler: (api: Package) => void) {
