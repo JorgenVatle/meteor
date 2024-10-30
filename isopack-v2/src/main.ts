@@ -18,8 +18,8 @@ async function parse(packageName: string) {
     globalThis.Cordova = new PackageCordova();
     
     await import(packagePath(packageName)).catch((error) => {
-        console.warn(`Failed to load package: ${packageName}`);
-        console.error(error);
+        Logger.warn(`Failed to load package: ${packageName}`);
+        Logger.error(error);
     });
     
     return globalThis.Package;
@@ -70,9 +70,9 @@ compilePackages().then(async () => {
         tsconfig: 'tsconfig.packages.json',
     })
     
-    console.log('Remember to install npm dependencies:\n', [...NpmDependencies.keys()].join(' '));
+    Logger.log('Remember to install npm dependencies:\n', [...NpmDependencies.keys()].join(' '));
 }).catch((error) => {
-    console.error(error);
+    Logger.error(error);
 });
 
 async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
