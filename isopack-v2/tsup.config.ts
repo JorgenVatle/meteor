@@ -10,8 +10,7 @@ export default defineConfig({
     skipNodeModulesBundle: true,
     clean: true,
     sourcemap: true,
-    cjsInterop: true,
-    shims: true,
+    cjsInterop: false,
     noExternal: ['meteor'],
     format: 'esm',
     esbuildPlugins: [

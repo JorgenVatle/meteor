@@ -68,7 +68,7 @@ compilePackages().then(async () => {
         
         sourcemap: true,
         splitting: false,
-        cjsInterop: true,
+        cjsInterop: false,
         target: 'node20',
         format: 'esm',
         skipNodeModulesBundle: true,
