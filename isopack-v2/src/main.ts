@@ -4,6 +4,7 @@ import * as process from 'node:process';
 import { build } from 'tsup';
 import { BUNDLE_ASSETS_DIR, DEBUG, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR, TYPES_DIST_DIR } from './Config';
 import { packagePath } from './lib/Helpers';
+import { Logger } from './lib/Logger';
 import { meteor } from './plugin/MeteorImports';
 import { PackageCordova, PackageNpm, PackageNamespace, Packages, Scope, NpmDependencies } from './lib/Package';
 
@@ -89,7 +90,7 @@ async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
         ].join('\n');
         
         await FS.writeFileSync(to, declarationContent);
-        logger.debug(`Copied type definition file: ${file}`)
+        Logger.debug(`Copied type definition file: ${file}`)
     }
 }
 
@@ -156,19 +157,9 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             importStrings.join('\n'),
             exportStrings.join('\n'),
         ].join('\n'));
-        logger.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
+        Logger.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
     });
 }
-
-const logger: Pick<typeof console, 'log' | 'debug'> = {
-    log: console.log,
-    debug(...args: any[]) {
-        if (!DEBUG) {
-            return;
-        }
-        console.debug(...args);
-    }
-};
 
 declare const globalThis: {
     Package: PackageNamespace;
