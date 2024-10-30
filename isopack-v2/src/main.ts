@@ -43,6 +43,7 @@ async function compilePackages() {
 }
 
 compilePackages().then(async () => {
+    Logger.success('Compilation completed!');
     console.dir(Packages, { colors: true, depth: 3 });
     
     for (const [name, parsedPackage] of Packages) {
