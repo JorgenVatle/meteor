@@ -3,7 +3,7 @@ import Path from 'node:path';
 import { PACKAGE_DIST_DIR } from './src/Environment';
 
 export default defineConfig({
-    entry: ['./src/main.ts', 'test-app/app.ts'],
+    entry: ['./src/main.ts', 'test-app'],
     skipNodeModulesBundle: true,
     clean: true,
     sourcemap: true,
