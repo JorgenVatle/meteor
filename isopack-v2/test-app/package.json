@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "tsup app.ts --outDir dist && node --enable-source-maps dist/app.mjs",
+    "start": "cd .. && tsup test-app/app.ts --outDir dist/test-app && node --enable-source-maps dist/test-app/app.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
