@@ -1,5 +1,6 @@
 import Path from 'node:path';
 import { normalizeOptionalArray, packagePath } from './Helpers';
+import { Logger } from './Logger';
 
 export const Packages = new Map<string, PackageNamespace>();
 export const NpmDependencies = new Map<string, string>();
@@ -27,7 +28,7 @@ export class PackageNamespace {
         summary: string,
         version: string;
     }) {
-        console.log(config);
+        Logger.info(config);
     }
     
     public onUse(handler: (api: PackageNamespace) => void) {
@@ -46,7 +47,7 @@ export class PackageNamespace {
     
     protected loadDependency(packageName: string) {
         if (packageName.includes(':')) {
-            console.warn(`Cannot load external dependency! ${packageName}`);
+            Logger.warn(`Cannot load external dependency! ${packageName}`);
             return;
         }
         
