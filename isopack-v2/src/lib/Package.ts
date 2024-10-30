@@ -1,6 +1,8 @@
 import Path from 'node:path';
 import { normalizeOptionalArray, packagePath } from './Helpers';
 
+export const Packages = new Map<string, Package>();
+
 export class Package {
     public readonly dependencies = new Set<string>();
     public readonly assets = new Set<ScopedReference>();
@@ -17,7 +19,7 @@ export class Package {
     public readonly globalVariables = new Set<ScopedReference>();
     
     constructor(public readonly name: string) {
-        packages.set(name, this);
+        Packages.set(name, this);
     }
     
     public describe(config: {

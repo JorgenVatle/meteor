@@ -5,9 +5,8 @@ import { build } from 'tsup';
 import { BUNDLE_ASSETS_DIR, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR, TYPES_DIST_DIR } from './Config';
 import { packagePath } from './lib/Helpers';
 import { meteor } from './plugin/MeteorImports';
-import { Package, Scope } from './lib/Package';
+import { Package, Packages, Scope } from './lib/Package';
 
-const packages = new Map<string, Package>();
 const npmDependencies = new Map<string, string>();
 
 
@@ -30,7 +29,7 @@ class Cordova extends Npm {
 }
 
 async function parse(packageName: string) {
-    if (packages.has(packageName)) {
+    if (Packages.has(packageName)) {
         return;
     }
     
@@ -65,9 +64,9 @@ async function compilePackages() {
 
 compilePackages().then(async () => {
     console.log('Finished');
-    console.dir(packages, { colors: true, depth: 3 });
+    console.dir(Packages, { colors: true, depth: 3 });
     
-    for (const [name, parsedPackage] of packages) {
+    for (const [name, parsedPackage] of Packages) {
         await prepareEntryModules(parsedPackage)
         await copyTypeDefinitions(parsedPackage);
     }
