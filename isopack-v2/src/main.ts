@@ -42,7 +42,6 @@ async function compilePackages() {
 }
 
 compilePackages().then(async () => {
-    console.log('Finished');
     console.dir(Packages, { colors: true, depth: 3 });
     
     for (const [name, parsedPackage] of Packages) {
@@ -90,7 +89,7 @@ async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
         ].join('\n');
         
         await FS.writeFileSync(to, declarationContent);
-        console.log(`Copied type definition file: ${file}`)
+        console.debug(`Copied type definition file: ${file}`)
     }
 }
 
@@ -157,7 +156,7 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             importStrings.join('\n'),
             exportStrings.join('\n'),
         ].join('\n'));
-        console.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
+        logger.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
     });
 }
 
