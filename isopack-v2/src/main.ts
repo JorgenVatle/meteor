@@ -133,6 +133,7 @@ compilePackages().then(async () => {
     
     for (const [name, parsedPackage] of packages) {
         await prepareEntryModules(parsedPackage)
+        await buildPackage(parsedPackage);
     }
 }).catch((error) => {
     console.error(error);
