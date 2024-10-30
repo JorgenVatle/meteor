@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "cd .. && tsup test-app/app.ts --outDir dist/test-app && node --enable-source-maps dist/test-app/app.mjs",
+    "start": "npm run build && npm run start:app",
+    "start:app": "cd .. && node --enable-source-maps dist/test-app/app.mjs",
+    "build": "cd .. && tsup test-app/app.ts --outDir dist/test-app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
