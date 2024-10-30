@@ -9,6 +9,7 @@ class Package {
     public readonly assets = new Set<[Scope, string]>();
     public readonly entryModule = new Map<Scope, string>();
     public readonly impliedPackages = new Set<string>();
+    public readonly modules = new Set<[Scope, string]>();
     
     
     
@@ -52,8 +53,12 @@ class Package {
         }
     }
     
-    public addFiles(files: string) {
-    
+    public addFiles(files: string | string[], scopeOption: ScopeOption = 'common') {
+        for (const file of normalizeOptionalArray(files)) {
+            for (const scope of normalizeOptionalArray(scopeOption)) {
+                this.modules.add([scope, file]);
+            }
+        }
     }
     
     public imply(packageName: string) {
