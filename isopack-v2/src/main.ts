@@ -6,7 +6,7 @@ const packages = new Map<string, Package>();
 
 class Package {
     public readonly dependencies = new Set<string>();
-    public readonly assets = new Set<string>();
+    public readonly assets = new Set<[Scope, string]>();
     public readonly entryModule = new Map<Scope, string>();
     public readonly impliedPackages = new Set<string>();
     
@@ -46,8 +46,10 @@ class Package {
         this.dependencies.add(packageName.split('@')[0]);
     }
     
-    public addAssets(assets: string | string[]) {
-    
+    public addAssets(assets: string | string[], scope: Scope = 'common') {
+        for (const asset of normalizeOptionalArray(assets)) {
+            this.assets.add([scope, asset]);
+        }
     }
     
     public addFiles(files: string) {
@@ -128,6 +130,13 @@ declare const globalThis: {
     Package: Package;
     Npm: Npm;
     Cordova: Cordova;
+}
+
+function normalizeOptionalArray<TType extends string>(input: TType | TType[]): TType[] {
+    if (Array.isArray(input)) {
+        return input;
+    }
+    return [input];
 }
 
 type Scope = 'server' | 'client' | 'common';
