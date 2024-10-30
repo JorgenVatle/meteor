@@ -6,6 +6,10 @@ const packages = new Map<string, Package>();
 
 class Package {
     public readonly dependencies = new Set<string>();
+    public readonly assets = new Set<string>();
+    public readonly entryModule = new Map<PackageScope, string>();
+    
+    
     
     constructor(public readonly name: string) {
         packages.set(name, this);
@@ -58,8 +62,13 @@ class Package {
     
     }
     
-    public mainModule(path: string) {
-    
+    public mainModule(path: string, scope?: PackageScope) {
+        if (scope) {
+            this.entryModule.set(scope, path);
+            return;
+        }
+        this.entryModule.set('server', path);
+        this.entryModule.set('client', path);
     }
     
     public onTest(handler: (api: Package) => void) {
