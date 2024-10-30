@@ -189,23 +189,28 @@ async function prepareEntryModules(parsedPackage: Package) {
         scopes[scope].exports.push(id)
     }
     
-    Object.entries(scopes).forEach(([scope, value]) => {
+    Object.entries(scopes).forEach(([scope, data]) => {
         const entryFileDir = Path.join(PACKAGE_ENTRY_DIR, parsedPackage.name);
         const entryFilePath = Path.join(entryFileDir, `${scope}.js`);
         const packageDir = Path.join(process.cwd(), '..', 'packages', parsedPackage.name);
-        const importStrings = value.imports.map((path) => {
+        const importStrings = data.imports.map((path) => {
             const absolutePath = Path.join(packageDir, path);
             const relativePath = Path.relative(entryFileDir, absolutePath)
             
             return `import ${JSON.stringify(relativePath)}`;
         });
         
+        const exportString = `export { ${data.exports.join(', ')} }`;
+        
         if (scope !== 'common') {
             importStrings.unshift(`import ${JSON.stringify('./common')}`);
         }
         
         FS.mkdirSync(entryFileDir, { recursive: true });
-        FS.writeFileSync(entryFilePath, importStrings.join('\n'));
+        FS.writeFileSync(entryFilePath, [
+            importStrings.join('\n'),
+            exportString,
+        ].join('\n'));
         console.log(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
     });
 }
