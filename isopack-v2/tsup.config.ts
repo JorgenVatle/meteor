@@ -8,6 +8,7 @@ export default defineConfig({
     clean: true,
     sourcemap: true,
     noExternal: ['meteor'],
+    format: 'esm',
     esbuildPlugins: [
         {
             name: 'meteor',
