@@ -12,6 +12,6 @@ export default defineConfig({
     noExternal: ['meteor'],
     format: 'esm',
     esbuildPlugins: [
-       meteor(),
+       meteor({ external: false }),
     ]
 })
