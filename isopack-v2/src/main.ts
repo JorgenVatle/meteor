@@ -5,28 +5,7 @@ import { build } from 'tsup';
 import { BUNDLE_ASSETS_DIR, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR, TYPES_DIST_DIR } from './Config';
 import { packagePath } from './lib/Helpers';
 import { meteor } from './plugin/MeteorImports';
-import { Package, Packages, Scope } from './lib/Package';
-
-const npmDependencies = new Map<string, string>();
-
-
-
-class Npm {
-    public dependencies: Record<string, string> = {};
-    depends(dependencies: Record<string, string>) {
-        Object.entries(dependencies).forEach(([name, version]) => {
-            this.dependencies[name] = version;
-            npmDependencies.set(name, version);
-        })
-    }
-    strip() {
-    
-    }
-}
-
-class Cordova extends Npm {
-
-}
+import { Cordova, Npm, Package, Packages, Scope, NpmDependencies } from './lib/Package';
 
 async function parse(packageName: string) {
     if (Packages.has(packageName)) {
@@ -90,7 +69,7 @@ compilePackages().then(async () => {
         tsconfig: 'tsconfig.packages.json',
     })
     
-    console.log('Remember to install npm dependencies:\n', [...npmDependencies.keys()].join(' '));
+    console.log('Remember to install npm dependencies:\n', [...NpmDependencies.keys()].join(' '));
 }).catch((error) => {
     console.error(error);
 });

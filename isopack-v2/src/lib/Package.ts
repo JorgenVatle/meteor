@@ -2,6 +2,7 @@ import Path from 'node:path';
 import { normalizeOptionalArray, packagePath } from './Helpers';
 
 export const Packages = new Map<string, Package>();
+export const NpmDependencies = new Map<string, string>();
 
 export class Package {
     public readonly dependencies = new Set<string>();
@@ -90,6 +91,25 @@ export class Package {
     public registerBuildPlugin() {}
     
 }
+
+
+export class Npm {
+    public dependencies: Record<string, string> = {};
+    depends(dependencies: Record<string, string>) {
+        Object.entries(dependencies).forEach(([name, version]) => {
+            this.dependencies[name] = version;
+            NpmDependencies.set(name, version);
+        })
+    }
+    strip() {
+    
+    }
+}
+
+export class Cordova extends Npm {
+
+}
+
 
 export type Scope = 'server' | 'client' | 'common';
 export type ScopeOption = Scope | Scope[];
