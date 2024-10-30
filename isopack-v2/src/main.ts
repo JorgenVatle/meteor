@@ -135,5 +135,5 @@ declare const globalThis: {
     Cordova: Cordova;
 }
 
-type Scope = 'server' | 'client';
+type Scope = 'server' | 'client' | 'common';
 type ScopeOption = Scope | Scope[];
