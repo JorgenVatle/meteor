@@ -22,6 +22,10 @@ async function parse(packageName: string) {
         Logger.error(error);
     });
     
+    for (const dependency of globalThis.Package.dependencies) {
+        await parse(dependency);
+    }
+    
     return globalThis.Package;
 }
 
@@ -34,11 +38,6 @@ async function compilePackages() {
     
     for (const name of packages) {
         await parse(name);
-    }
-    
-    
-    for (const dependency of globalThis.Package.dependencies) {
-        await parse(dependency);
     }
 }
 
