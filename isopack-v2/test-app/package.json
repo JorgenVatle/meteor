@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "cd .. && tsup && node dist/test-app/app.js",
+    "start": "tsup && cd .. && node dist/test-app/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
