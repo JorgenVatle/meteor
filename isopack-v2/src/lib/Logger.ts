@@ -9,10 +9,12 @@ export const Logger = {
         console.info(`\n ✅  ${message}\n`, ...params);
     },
     debug(...args: LoggerArgs) {
-        if (!DEBUG) {
-            return;
-        }
+        if (!DEBUG) return;
         console.debug(...args);
+    },
+    debugDir(...args: Parameters<typeof console.dir>) {
+        if (!DEBUG) return;
+        console.dir(...args);
     }
 };
 
