@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "tsup && node dist/src/main.mjs",
+    "start": "tsup && node --enable-source-maps dist/src/main.mjs",
     "test": "npm start -w test-app"
   },
   "keywords": [],
