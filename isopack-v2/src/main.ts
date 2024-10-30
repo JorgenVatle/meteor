@@ -196,14 +196,18 @@ async function buildPackage(parsedPackage: Package) {
 
 async function copyTypeDefinitions(parsedPackage: Package) {
     await FS.mkdirSync(TYPES_DIST_DIR, { recursive: true });
+    const referenceLines: string[] = [];
     
     for (const file of parsedPackage.types) {
         const from = Path.join(parsedPackage.srcDir, file);
         const to = Path.join(TYPES_DIST_DIR, file);
         
         await FS.copyFileSync(from, to);
+        referenceLines.push(`/// <reference path="./${file}" />`);
         console.log(`Copied type definition file: ${file}`)
     }
+    
+    await FS.writeFileSync(Path.join(TYPES_DIST_DIR, 'index.d.ts'), referenceLines.join('\n'));
 }
 
 async function prepareEntryModules(parsedPackage: Package) {
