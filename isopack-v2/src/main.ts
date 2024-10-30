@@ -157,28 +157,14 @@ compilePackages().then(async () => {
     
     for (const [name, parsedPackage] of packages) {
         await prepareEntryModules(parsedPackage)
-        await buildPackage(parsedPackage);
         await copyTypeDefinitions(parsedPackage);
     }
     
-    console.log('Remember to install npm dependencies:\n', [...npmDependencies.keys()].join(' '));
-}).catch((error) => {
-    console.error(error);
-});
-
-async function buildPackage(parsedPackage: Package) {
-    const name = parsedPackage.name;
-    
-    // todo: Prepare common, server and client entry files for package.
     await build({
         name: 'built-packages',
-        outDir: Path.join(PACKAGE_DIST_DIR, name),
+        outDir: PACKAGE_DIST_DIR,
         clean: true,
-        entry: [
-            Path.join(PACKAGE_ENTRY_DIR, name, 'client.js'),
-            Path.join(PACKAGE_ENTRY_DIR, name, 'server.js'),
-            Path.join(PACKAGE_ENTRY_DIR, name, 'common.js'),
-        ],
+        entry: [PACKAGE_ENTRY_DIR],
         
         sourcemap: true,
         splitting: false,
@@ -192,7 +178,11 @@ async function buildPackage(parsedPackage: Package) {
         config: false,
         tsconfig: 'tsconfig.packages.json',
     })
-}
+    
+    console.log('Remember to install npm dependencies:\n', [...npmDependencies.keys()].join(' '));
+}).catch((error) => {
+    console.error(error);
+});
 
 async function copyTypeDefinitions(parsedPackage: Package) {
     await FS.mkdirSync(TYPES_DIST_DIR, { recursive: true });
