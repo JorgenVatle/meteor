@@ -10,8 +10,7 @@ class Package {
     public readonly entryModule = new Map<Scope, string>();
     public readonly impliedPackages = new Set<string>();
     public readonly modules = new Set<[Scope, string]>();
-    
-    
+    public readonly exports = new Set<[Scope, string]>();
     
     constructor(public readonly name: string) {
         packages.set(name, this);
@@ -66,7 +65,9 @@ class Package {
     }
     
     public export(name: string, context: ScopeOption) {
-    
+        for (const scope of normalizeOptionalArray(context)) {
+            this.exports.add([scope, name]);
+        }
     }
     
     public mainModule(path: string, scope: Scope = 'common') {
