@@ -164,7 +164,7 @@ async function buildPackage(parsedPackage: Package) {
         ],
         splitting: false,
         target: 'node20',
-        format: ['esm'],
+        format: ['esm', 'cjs'],
         skipNodeModulesBundle: true,
         external: ['esbuild'],
         config: false,
@@ -218,7 +218,7 @@ async function prepareEntryModules(parsedPackage: Package) {
             const absolutePath = Path.join(packageDir, path);
             const relativePath = Path.relative(entryFileDir, absolutePath)
             
-            return `import ${JSON.stringify(relativePath)}`;
+            return `export * from ${JSON.stringify(relativePath)}`;
         });
         
         const exportStrings = data.exports.map((id) => `export const ${id} = globalThis.${id}`);
