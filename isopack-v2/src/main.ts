@@ -137,7 +137,7 @@ async function buildPackage(name: string) {
     // todo: Prepare common, server and client entry files for package.
     await build({
         name: 'built-packages',
-        outDir: '_packageDist',
+        outDir: `_packageDist/${name}`,
         clean: true,
         entry: [
             Path.join(process.cwd(), '.package-entry', name, 'client.js'),
