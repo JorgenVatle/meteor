@@ -3,7 +3,7 @@ import Path from 'node:path';
 import { PACKAGE_DIST_DIR } from '../Config';
 import { Logger } from '../lib/Logger';
 
-export function meteor(): Plugin {
+export function meteor({ external = true } = {}): Plugin {
     return {
         name: 'meteor',
         setup(build) {
@@ -15,7 +15,7 @@ export function meteor(): Plugin {
                 const [meteor, name] = args.path.split('/');
                 const result = {
                     path: Path.join(PACKAGE_DIST_DIR, name, 'server.js'),
-                    external: true,
+                    external,
                 }
                 
                 Logger.debug({ meteor, name, result });
