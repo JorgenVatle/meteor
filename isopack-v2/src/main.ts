@@ -14,6 +14,7 @@ class Package {
     public readonly entryModule = new Map<Scope, string>();
     public readonly impliedPackages = new Set<string>();
     public readonly modules = new Set<ScopedReference>();
+    public readonly types = new Set<string>();
     
     // Defined in package.js with api.export()
     public readonly globalVariables = new Set<ScopedReference>();
@@ -55,6 +56,9 @@ class Package {
     public addAssets(assets: string | string[], scope: Scope = 'common') {
         for (const asset of normalizeOptionalArray(assets)) {
             this.assets.add([scope, asset]);
+            if (asset.endsWith('.d.ts')) {
+                this.types.add(asset);
+            }
         }
     }
     
