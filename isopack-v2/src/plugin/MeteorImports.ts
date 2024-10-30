@@ -1,6 +1,7 @@
 import { Plugin } from "esbuild";
 import Path from 'node:path';
 import { PACKAGE_DIST_DIR } from '../Config';
+import { Logger } from '../lib/Logger';
 
 export function meteor(): Plugin {
     return {
@@ -17,7 +18,7 @@ export function meteor(): Plugin {
                     external: true,
                 }
                 
-                console.log({ meteor, name, result });
+                Logger.debug({ meteor, name, result });
                 return result;
             });
         }
