@@ -28,7 +28,8 @@ export class PackageNamespace {
         summary: string,
         version: string;
     }) {
-        Logger.info(`📦 ${this.name}@${config.version} - ${config.summary}`);
+        const packageId = `${this.name}@${config.version}`.padEnd(32, ' ');
+        Logger.info(`📦 ${packageId} ${config.summary}`);
     }
     
     public onUse(handler: (api: PackageNamespace) => void) {
