@@ -57,7 +57,8 @@ compilePackages().then(async () => {
         entry: [PACKAGE_ENTRY_DIR],
         
         sourcemap: true,
-        splitting: false,
+        splitting: true,
+        cjsInterop: true,
         target: 'node20',
         format: 'esm',
         skipNodeModulesBundle: true,
@@ -133,6 +134,9 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         prepareScope(scope);
         scopes[scope].exports.push(id)
     }
+    
+    // Clean up old build files
+    FS.rmSync(PACKAGE_ENTRY_DIR, { recursive: true });
     
     Object.entries(scopes).forEach(([scope, data]) => {
         const entryFileDir = Path.join(PACKAGE_ENTRY_DIR, parsedPackage.name);
