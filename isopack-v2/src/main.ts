@@ -5,6 +5,7 @@ import { build } from 'tsup';
 import { BUNDLE_ASSETS_DIR, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR } from './Config';
 
 const packages = new Map<string, Package>();
+const npmDependencies = new Map<string, string>();
 
 class Package {
     public readonly dependencies = new Set<string>();
@@ -89,7 +90,10 @@ class Package {
 class Npm {
     public dependencies: Record<string, string> = {};
     depends(dependencies: Record<string, string>) {
-        Object.assign(this.dependencies, dependencies);
+        Object.entries(dependencies).forEach(([name, version]) => {
+            this.dependencies[name] = version;
+            npmDependencies.set(name, version);
+        })
     }
     strip() {
     
@@ -146,9 +150,8 @@ compilePackages().then(async () => {
         await prepareEntryModules(parsedPackage)
         await buildPackage(parsedPackage);
     }
-    const npmDependencies = Object.keys(globalThis.Npm.dependencies || {}).join(' ');
     
-    console.log('Remember to install npm dependencies:\n', npmDependencies);
+    console.log('Remember to install npm dependencies:\n', [...npmDependencies.keys()].join(' '));
 }).catch((error) => {
     console.error(error);
 });
