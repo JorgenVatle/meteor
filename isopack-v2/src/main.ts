@@ -8,6 +8,7 @@ class Package {
     public readonly dependencies = new Set<string>();
     public readonly assets = new Set<string>();
     public readonly entryModule = new Map<PackageScope, string>();
+    public readonly impliedPackages = new Set<string>();
     
     
     
@@ -54,8 +55,7 @@ class Package {
     }
     
     public imply(packageName: string) {
-    
-    
+        this.impliedPackages.add(packageName);
     }
     
     public export(name: string, context: ScopeOption) {
