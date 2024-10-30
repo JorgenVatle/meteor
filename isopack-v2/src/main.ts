@@ -176,7 +176,6 @@ async function buildPackage(parsedPackage: Package) {
         format: 'esm',
         skipNodeModulesBundle: true,
         noExternal: ['meteor'],
-        external: ['esbuild'],
         esbuildPlugins: [
             meteor(),
         ],
