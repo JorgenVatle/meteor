@@ -156,7 +156,10 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             return `export * from ${JSON.stringify(relativePath)}`;
         });
         
-        const exportStrings = data.exports.map((id) => `export const ${id} = globalThis.${id}`);
+        const exportStrings = data.exports.map((id) => [
+            `globalThis.${id} = globalThis.${id}`,
+            `export const ${id} = globalThis.${id}`
+        ]).flat();
         
         if (scope !== 'common') {
             importStrings.unshift(`export * from ${JSON.stringify('./common')}`);
