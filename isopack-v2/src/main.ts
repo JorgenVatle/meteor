@@ -12,7 +12,9 @@ class Package {
     public readonly entryModule = new Map<Scope, string>();
     public readonly impliedPackages = new Set<string>();
     public readonly modules = new Set<ScopedReference>();
-    public readonly exports = new Set<ScopedReference>();
+    
+    // Defined in package.js with api.export()
+    public readonly globalVariables = new Set<ScopedReference>();
     
     constructor(public readonly name: string) {
         packages.set(name, this);
@@ -68,7 +70,7 @@ class Package {
     
     public export(name: string, context: ScopeOption = 'common') {
         for (const scope of normalizeOptionalArray(context)) {
-            this.exports.add([scope, name]);
+            this.globalVariables.add([scope, name]);
         }
     }
     
@@ -189,7 +191,7 @@ async function prepareEntryModules(parsedPackage: Package) {
         scopes[scope].imports.push(path);
     }
     
-    for (const [scope, id] of parsedPackage.exports) {
+    for (const [scope, id] of parsedPackage.globalVariables) {
         scopes[scope].exports.push(id)
     }
     
