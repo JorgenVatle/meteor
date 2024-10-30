@@ -4,6 +4,7 @@
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
+    "start": "cd .. && tsup && node dist/test-app/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
