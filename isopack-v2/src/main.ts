@@ -163,6 +163,7 @@ async function buildPackage(parsedPackage: Package) {
             Path.join(PACKAGE_ENTRY_DIR, name, 'server.js'),
             Path.join(PACKAGE_ENTRY_DIR, name, 'common.js'),
         ],
+        sourcemap: true,
         splitting: false,
         target: 'node20',
         format: ['esm', 'cjs'],
