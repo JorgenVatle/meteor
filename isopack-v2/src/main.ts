@@ -205,7 +205,7 @@ async function prepareEntryModules(parsedPackage: Package) {
         const exportStrings = data.exports.map((id) => `export const ${id} = globalThis.${id}`);
         
         if (scope !== 'common') {
-            importStrings.unshift(`import ${JSON.stringify('./common')}`);
+            importStrings.unshift(`export * from ${JSON.stringify('./common')}`);
         }
         
         FS.mkdirSync(entryFileDir, { recursive: true });
