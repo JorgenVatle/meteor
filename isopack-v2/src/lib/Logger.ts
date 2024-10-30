@@ -5,10 +5,15 @@ export const Logger = {
     info: console.info,
     error: console.error,
     warn: console.warn,
-    debug(...args: [message: any, ...params: any]) {
+    success(message: string, ...params: any[]) {
+        console.info(`\n ✅  ${message}\n`, ...params);
+    },
+    debug(...args: LoggerArgs) {
         if (!DEBUG) {
             return;
         }
         console.debug(...args);
     }
 };
+
+export type LoggerArgs = [message: any, ...params: any];
