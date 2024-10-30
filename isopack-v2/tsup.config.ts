@@ -1,5 +1,6 @@
 import { defineConfig } from 'tsup';
 import Path from 'node:path';
+import { PACKAGE_DIST_DIR } from './src/Environment';
 
 export default defineConfig({
     entry: ['./src/main.ts', 'test-app/app.js'],
@@ -13,7 +14,7 @@ export default defineConfig({
                 build.onResolve({ filter: /^meteor\// }, (args) => {
                     const [meteor, name] = args.path.split('/');
                     const result = {
-                        path: Path.join(process.cwd(), '_packageDist', name, 'server'),
+                        path: Path.join(PACKAGE_DIST_DIR, name, 'server'),
                         external: true,
                     }
                     
