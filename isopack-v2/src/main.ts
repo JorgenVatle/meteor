@@ -138,6 +138,8 @@ compilePackages().then(async () => {
     console.error(error);
 });
 
+const PACKAGE_ENTRY_DIR = Path.join(process.cwd(), '.package-entry');
+
 async function buildPackage(parsedPackage: Package) {
     const name = parsedPackage.name;
     
@@ -147,9 +149,9 @@ async function buildPackage(parsedPackage: Package) {
         outDir: `_packageDist/${name}`,
         clean: true,
         entry: [
-            Path.join(process.cwd(), '.package-entry', name, 'client.js'),
-            Path.join(process.cwd(), '.package-entry', name, 'server.js'),
-            Path.join(process.cwd(), '.package-entry', name, 'common.js'),
+            Path.join(PACKAGE_ENTRY_DIR, name, 'client.js'),
+            Path.join(PACKAGE_ENTRY_DIR, name, 'server.js'),
+            Path.join(PACKAGE_ENTRY_DIR, name, 'common.js'),
         ],
         splitting: false,
         target: 'node20',
@@ -174,7 +176,7 @@ async function prepareEntryModules(parsedPackage: Package) {
     }
     
     Object.entries(imports).forEach(([scope, value]) => {
-        const entryFileDir = Path.join(process.cwd(), '.package-entry')
+        const entryFileDir = Path.join(PACKAGE_ENTRY_DIR, parsedPackage.name);
         const entryFilePath = Path.join(entryFileDir, `${scope}.js`);
         const packageDir = Path.join(process.cwd(), '..', 'packages', parsedPackage.name);
         const importStrings = value.map((path) => {
@@ -184,6 +186,7 @@ async function prepareEntryModules(parsedPackage: Package) {
             return `import ${JSON.stringify(relativePath)}`;
         });
         
+        FS.mkdirSync(entryFileDir, { recursive: true });
         FS.writeFileSync(entryFilePath, importStrings.join('\n'));
         console.log(`Created entry file: ${Path.relative(process.cwd(), entryFileDir)}`);
     });
