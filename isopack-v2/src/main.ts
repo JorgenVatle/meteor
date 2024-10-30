@@ -87,9 +87,9 @@ class Package {
 }
 
 class Npm {
-    public dependencies?: Record<string, string>;
+    public dependencies: Record<string, string> = {};
     depends(dependencies: Record<string, string>) {
-        this.dependencies = dependencies;
+        Object.assign(this.dependencies, dependencies);
     }
     strip() {
     
@@ -146,6 +146,9 @@ compilePackages().then(async () => {
         await prepareEntryModules(parsedPackage)
         await buildPackage(parsedPackage);
     }
+    const npmDependencies = Object.keys(globalThis.Npm.dependencies || {}).join(' ');
+    
+    console.log('Remember to install npm dependencies:\n', npmDependencies);
 }).catch((error) => {
     console.error(error);
 });
