@@ -158,6 +158,7 @@ compilePackages().then(async () => {
     for (const [name, parsedPackage] of packages) {
         await prepareEntryModules(parsedPackage)
         await buildPackage(parsedPackage);
+        await copyTypeDefinitions(parsedPackage);
     }
     
     console.log('Remember to install npm dependencies:\n', [...npmDependencies.keys()].join(' '));
