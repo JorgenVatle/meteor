@@ -1,4 +1,4 @@
-import { Plugin } from "esbuild";
+import { type OnResolveResult, Plugin, type OnLoadResult } from 'esbuild';
 import Path from 'node:path';
 import { PACKAGE_DIST_DIR } from '../Config';
 import { Logger } from '../lib/Logger';
@@ -13,7 +13,7 @@ export function meteor({ external = true } = {}): Plugin {
             
             build.onResolve({ filter: /^meteor\// }, (args) => {
                 const [meteor, name] = args.path.split('/');
-                const result = {
+                const result: OnResolveResult = {
                     path: Path.join(PACKAGE_DIST_DIR, name, 'server.mjs'),
                     external,
                 }
