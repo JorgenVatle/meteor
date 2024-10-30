@@ -126,7 +126,7 @@ async function compilePackages() {
 
 compilePackages().then(() => {
     console.log('Finished');
-    console.log(packages);
+    console.dir(packages, { colors: true, depth: 3 });
 }).catch((error) => {
     console.error(error);
 });
