@@ -3,6 +3,7 @@ import * as Path from 'node:path';
 import * as process from 'node:process';
 import { build } from 'tsup';
 import { BUNDLE_ASSETS_DIR, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR } from './Config';
+import { meteor } from './plugin/MeteorImports';
 
 const packages = new Map<string, Package>();
 const npmDependencies = new Map<string, string>();
@@ -175,6 +176,9 @@ async function buildPackage(parsedPackage: Package) {
         format: 'esm',
         skipNodeModulesBundle: true,
         external: ['esbuild'],
+        esbuildPlugins: [
+            meteor(),
+        ],
         config: false,
         tsconfig: 'tsconfig.packages.json',
     })
