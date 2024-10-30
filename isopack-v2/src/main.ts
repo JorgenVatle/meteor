@@ -1,11 +1,8 @@
+import * as FS from 'node:fs';
 import * as Path from 'node:path';
 import * as process from 'node:process';
 import { build } from 'tsup';
-import * as FS from 'node:fs';
-
-const PACKAGE_TEMP_DIR = Path.join(process.cwd(), '.packages');
-const PACKAGE_DIST_DIR = Path.join(PACKAGE_TEMP_DIR, 'dist');
-const PACKAGE_ENTRY_DIR = Path.join(PACKAGE_TEMP_DIR, 'entry');
+import { PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR } from './Environment';
 
 const packages = new Map<string, Package>();
 
