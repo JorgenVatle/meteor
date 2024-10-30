@@ -60,7 +60,7 @@ compilePackages().then(async () => {
         entry: [PACKAGE_ENTRY_DIR],
         
         sourcemap: true,
-        splitting: true,
+        splitting: false,
         cjsInterop: true,
         target: 'node20',
         format: 'esm',
