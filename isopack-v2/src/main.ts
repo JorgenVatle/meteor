@@ -45,6 +45,9 @@ compilePackages().then(async () => {
     Logger.success(`Compilation completed - Parsed ${Packages.size} packages`);
     Logger.debugDir(Packages, { colors: true, depth: 3 });
     
+    // Clean up entry modules from previous builds
+    FS.rmSync(PACKAGE_ENTRY_DIR, { recursive: true });
+    
     for (const [name, parsedPackage] of Packages) {
         await prepareEntryModules(parsedPackage)
         await copyTypeDefinitions(parsedPackage);
@@ -134,9 +137,6 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         prepareScope(scope);
         scopes[scope].exports.push(id)
     }
-    
-    // Clean up old build files
-    FS.rmSync(PACKAGE_ENTRY_DIR, { recursive: true });
     
     Object.entries(scopes).forEach(([scope, data]) => {
         const entryFileDir = Path.join(PACKAGE_ENTRY_DIR, parsedPackage.name);
