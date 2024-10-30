@@ -154,6 +154,10 @@ async function buildPackage(parsedPackage: Package) {
             Path.join(PACKAGE_ENTRY_DIR, name, 'server.js'),
             Path.join(PACKAGE_ENTRY_DIR, name, 'common.js'),
         ],
+        define: {
+            DDP: '{}',
+            DDPServer: '{}',
+        },
         splitting: false,
         target: 'node20',
         skipNodeModulesBundle: true,
@@ -200,7 +204,7 @@ async function prepareEntryModules(parsedPackage: Package) {
             return `import ${JSON.stringify(relativePath)}`;
         });
         
-        const exportString = `export { ${data.exports.join(', ')} }`;
+        const exportStrings = data.exports.map((id) => `export const ${id} = globalThis.${id}`);
         
         if (scope !== 'common') {
             importStrings.unshift(`import ${JSON.stringify('./common')}`);
@@ -209,7 +213,7 @@ async function prepareEntryModules(parsedPackage: Package) {
         FS.mkdirSync(entryFileDir, { recursive: true });
         FS.writeFileSync(entryFilePath, [
             importStrings.join('\n'),
-            exportString,
+            exportStrings.join('\n'),
         ].join('\n'));
         console.log(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
     });
