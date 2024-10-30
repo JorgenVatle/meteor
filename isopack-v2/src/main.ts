@@ -122,7 +122,7 @@ function packagePath(name: string) {
 }
 
 async function compilePackages() {
-    await parse('ddp');
+    await parse('meteor');
     
     for (const dependency of globalThis.Package.dependencies) {
         await parse(dependency);
@@ -158,6 +158,7 @@ async function buildPackage(parsedPackage: Package) {
         ],
         splitting: false,
         target: 'node20',
+        format: ['esm'],
         skipNodeModulesBundle: true,
         external: ['esbuild'],
         config: false,
@@ -179,15 +180,27 @@ async function prepareEntryModules(parsedPackage: Package) {
             exports: [],
         },
     };
+    const prepareScope = (scope: Scope) => {
+        if (scopes[scope]) {
+            return;
+        }
+        scopes[scope] = {
+            imports: [],
+            exports: []
+        }
+    }
     for (const [scope, path] of parsedPackage.entryModule) {
+        prepareScope(scope);
         scopes[scope].imports.push(path);
     }
     
     for (const [scope, path] of parsedPackage.modules) {
+        prepareScope(scope);
         scopes[scope].imports.push(path);
     }
     
     for (const [scope, id] of parsedPackage.globalVariables) {
+        prepareScope(scope);
         scopes[scope].exports.push(id)
     }
     
