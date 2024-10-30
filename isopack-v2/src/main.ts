@@ -1,3 +1,4 @@
+import * as Path from 'node:path';
 import * as process from 'node:process';
 import { build } from 'tsup';
 
@@ -125,12 +126,31 @@ async function compilePackages() {
     }
 }
 
-compilePackages().then(() => {
+compilePackages().then(async () => {
     console.log('Finished');
     console.dir(packages, { colors: true, depth: 3 });
 }).catch((error) => {
     console.error(error);
 });
+
+async function buildPackage(name: string) {
+    // todo: Prepare common, server and client entry files for package.
+    await build({
+        name: 'built-packages',
+        outDir: '_packageDist',
+        clean: true,
+        entry: [
+            Path.join(process.cwd(), '.package-entry', name, 'client.js'),
+            Path.join(process.cwd(), '.package-entry', name, 'server.js'),
+            Path.join(process.cwd(), '.package-entry', name, 'common.js'),
+        ],
+        splitting: false,
+        target: 'node20',
+        skipNodeModulesBundle: true,
+        external: ['esbuild'],
+        config: false,
+    })
+}
 
 declare const globalThis: {
     Package: Package;
