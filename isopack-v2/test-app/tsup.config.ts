@@ -6,4 +6,4 @@ export default defineConfig({
     outDir: '../dist/test-app',
     entry: ['./app.ts'],
     tsconfig: '../tsconfig.json',
-})
+});
