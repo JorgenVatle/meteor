@@ -196,18 +196,21 @@ async function buildPackage(parsedPackage: Package) {
 
 async function copyTypeDefinitions(parsedPackage: Package) {
     await FS.mkdirSync(TYPES_DIST_DIR, { recursive: true });
-    const referenceLines: string[] = [];
     
     for (const file of parsedPackage.types) {
         const from = Path.join(parsedPackage.srcDir, file);
         const to = Path.join(TYPES_DIST_DIR, file);
         
-        await FS.copyFileSync(from, to);
-        referenceLines.push(`/// <reference path="./${file}" />`);
+        const content = FS.readFileSync(from);
+        const declarationContent = [
+            `declare module 'meteor/${parsedPackage.name}' {`,
+                content,
+            '}',
+        ].join('\n');
+        
+        await FS.writeFileSync(to, declarationContent);
         console.log(`Copied type definition file: ${file}`)
     }
-    
-    await FS.writeFileSync(Path.join(TYPES_DIST_DIR, 'index.d.ts'), referenceLines.join('\n'));
 }
 
 async function prepareEntryModules(parsedPackage: Package) {
