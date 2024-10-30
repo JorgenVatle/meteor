@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "tsup && node dist/main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsup && node dist/src/main.js",
+    "test": "tsup && node dist/test-app/app.js"
   },
   "keywords": [],
   "author": "",
