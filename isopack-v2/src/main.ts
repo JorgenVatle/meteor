@@ -64,7 +64,7 @@ class Package {
         this.impliedPackages.add(packageName);
     }
     
-    public export(name: string, context: ScopeOption) {
+    public export(name: string, context: ScopeOption = 'common') {
         for (const scope of normalizeOptionalArray(context)) {
             this.exports.add([scope, name]);
         }
