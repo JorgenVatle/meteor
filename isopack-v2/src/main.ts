@@ -187,6 +187,10 @@ async function prepareEntryModules(parsedPackage: Package) {
             return `import ${JSON.stringify(relativePath)}`;
         });
         
+        if (scope !== 'common') {
+            importStrings.unshift(`import ${JSON.stringify('./common')}`);
+        }
+        
         FS.mkdirSync(entryFileDir, { recursive: true });
         FS.writeFileSync(entryFilePath, importStrings.join('\n'));
         console.log(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
