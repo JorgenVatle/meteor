@@ -130,6 +130,10 @@ async function compilePackages() {
 compilePackages().then(async () => {
     console.log('Finished');
     console.dir(packages, { colors: true, depth: 3 });
+    
+    for (const [name, parsedPackage] of packages) {
+        await prepareEntryModules(parsedPackage)
+    }
 }).catch((error) => {
     console.error(error);
 });
