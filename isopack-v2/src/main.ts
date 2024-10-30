@@ -3,6 +3,9 @@ import * as process from 'node:process';
 import { build } from 'tsup';
 import * as FS from 'node:fs';
 
+const PACKAGE_TEMP_DIR = Path.join(process.cwd(), '.packages');
+const PACKAGE_DIST_DIR = Path.join(PACKAGE_TEMP_DIR, 'dist');
+const PACKAGE_ENTRY_DIR = Path.join(PACKAGE_TEMP_DIR, 'entry');
 
 const packages = new Map<string, Package>();
 
@@ -150,15 +153,13 @@ compilePackages().then(async () => {
     console.error(error);
 });
 
-const PACKAGE_ENTRY_DIR = Path.join(process.cwd(), '.package-entry');
-
 async function buildPackage(parsedPackage: Package) {
     const name = parsedPackage.name;
     
     // todo: Prepare common, server and client entry files for package.
     await build({
         name: 'built-packages',
-        outDir: `_packageDist/${name}`,
+        outDir: Path.join(PACKAGE_DIST_DIR, name),
         clean: true,
         entry: [
             Path.join(PACKAGE_ENTRY_DIR, name, 'client.js'),
