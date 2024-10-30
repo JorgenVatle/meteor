@@ -163,24 +163,37 @@ async function buildPackage(parsedPackage: Package) {
 }
 
 async function prepareEntryModules(parsedPackage: Package) {
-    const imports: Record<Scope, string[]> = {
-        server: [],
-        client: [],
-        common: [],
+    const scopes: Record<Scope, { imports: string[], exports: string[] }> = {
+        server: {
+            imports: [],
+            exports: [],
+        },
+        client: {
+            imports: [],
+            exports: [],
+        },
+        common: {
+            imports: [],
+            exports: [],
+        },
     };
     for (const [scope, path] of parsedPackage.entryModule) {
-        imports[scope].push(path);
+        scopes[scope].imports.push(path);
     }
     
     for (const [scope, path] of parsedPackage.modules) {
-        imports[scope].push(path);
+        scopes[scope].imports.push(path);
     }
     
-    Object.entries(imports).forEach(([scope, value]) => {
+    for (const [scope, id] of parsedPackage.exports) {
+        scopes[scope].exports.push(id)
+    }
+    
+    Object.entries(scopes).forEach(([scope, value]) => {
         const entryFileDir = Path.join(PACKAGE_ENTRY_DIR, parsedPackage.name);
         const entryFilePath = Path.join(entryFileDir, `${scope}.js`);
         const packageDir = Path.join(process.cwd(), '..', 'packages', parsedPackage.name);
-        const importStrings = value.map((path) => {
+        const importStrings = value.imports.map((path) => {
             const absolutePath = Path.join(packageDir, path);
             const relativePath = Path.relative(entryFileDir, absolutePath)
             
