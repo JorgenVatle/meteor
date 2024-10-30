@@ -28,7 +28,7 @@ export class PackageNamespace {
         summary: string,
         version: string;
     }) {
-        Logger.info(config);
+        Logger.info(`📦 ${this.name}@${config.version} - ${config.summary}`);
     }
     
     public onUse(handler: (api: PackageNamespace) => void) {
