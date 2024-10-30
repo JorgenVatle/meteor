@@ -1,6 +1,6 @@
 import { defineConfig } from 'tsup';
 import Path from 'node:path';
-import { PACKAGE_DIST_DIR } from './src/Environment';
+import { PACKAGE_DIST_DIR } from './src/Config';
 
 export default defineConfig({
     entry: ['./src/main.ts', 'test-app'],

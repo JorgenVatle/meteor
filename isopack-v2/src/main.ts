@@ -2,7 +2,7 @@ import * as FS from 'node:fs';
 import * as Path from 'node:path';
 import * as process from 'node:process';
 import { build } from 'tsup';
-import { PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR } from './Environment';
+import { PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR } from './Config';
 
 const packages = new Map<string, Package>();
 
