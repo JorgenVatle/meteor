@@ -121,7 +121,7 @@ async function parse(packageName: string) {
 }
 
 function packagePath(name: string) {
-    return `${__dirname}/../../packages/${name}/package.js`;
+    return Path.join(process.cwd(), '..', 'packages', name, 'package.js');
 }
 
 async function compilePackages() {
