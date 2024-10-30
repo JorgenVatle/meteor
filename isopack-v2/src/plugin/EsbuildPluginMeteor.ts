@@ -16,6 +16,7 @@ export function meteor({ external = true } = {}): Plugin {
                 const result: OnResolveResult = {
                     path: Path.join(PACKAGE_DIST_DIR, name, 'server.mjs'),
                     external,
+                    sideEffects: true,
                 }
                 
                 Logger.debug({ meteor, name, result });
