@@ -122,7 +122,13 @@ function packagePath(name: string) {
 }
 
 async function compilePackages() {
-    await parse('meteor');
+    const name = process.argv[2];
+    
+    if (!name) {
+        throw new Error('you need to specify a package name to compile');
+    }
+    
+    await parse(name);
     
     for (const dependency of globalThis.Package.dependencies) {
         await parse(dependency);
