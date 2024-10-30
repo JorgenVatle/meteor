@@ -5,6 +5,7 @@ import { PACKAGE_DIST_DIR } from './src/Environment';
 export default defineConfig({
     entry: ['./src/main.ts', 'test-app/app.js'],
     skipNodeModulesBundle: true,
+    clean: true,
     sourcemap: true,
     noExternal: ['meteor'],
     esbuildPlugins: [
