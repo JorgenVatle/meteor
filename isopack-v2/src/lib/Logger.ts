@@ -1,8 +1,9 @@
 import { DEBUG } from '../Config';
 
-export const Logger: Pick<typeof console, 'log' | 'debug'> = {
+export const Logger = {
     log: console.log,
-    debug(...args: any[]) {
+    info: console.info,
+    debug(...args: [message: any, ...params: any]) {
         if (!DEBUG) {
             return;
         }
