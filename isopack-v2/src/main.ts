@@ -1,6 +1,7 @@
 import * as Path from 'node:path';
 import * as process from 'node:process';
 import { build } from 'tsup';
+import * as FS from 'node:fs';
 
 
 const packages = new Map<string, Package>();
@@ -133,7 +134,9 @@ compilePackages().then(async () => {
     console.error(error);
 });
 
-async function buildPackage(name: string) {
+async function buildPackage(parsedPackage: Package) {
+    const name = parsedPackage.name;
+    
     // todo: Prepare common, server and client entry files for package.
     await build({
         name: 'built-packages',
@@ -150,6 +153,36 @@ async function buildPackage(name: string) {
         external: ['esbuild'],
         config: false,
     })
+}
+
+async function prepareEntryModules(parsedPackage: Package) {
+    const imports: Record<Scope, string[]> = {
+        server: [],
+        client: [],
+        common: [],
+    };
+    for (const [scope, path] of parsedPackage.entryModule) {
+        imports[scope].push(path);
+    }
+    
+    for (const [scope, path] of parsedPackage.modules) {
+        imports[scope].push(path);
+    }
+    
+    Object.entries(imports).forEach(([scope, value]) => {
+        const entryFileDir = Path.join(process.cwd(), '.package-entry')
+        const entryFilePath = Path.join(entryFileDir, `${scope}.js`);
+        const packageDir = Path.join(process.cwd(), '..', 'packages', parsedPackage.name);
+        const importStrings = value.map((path) => {
+            const absolutePath = Path.join(packageDir, path);
+            const relativePath = Path.relative(entryFileDir, absolutePath)
+            
+            return `import ${JSON.stringify(relativePath)}`;
+        });
+        
+        FS.writeFileSync(entryFilePath, importStrings.join('\n'));
+        console.log(`Created entry file: ${Path.relative(process.cwd(), entryFileDir)}`);
+    });
 }
 
 declare const globalThis: {
