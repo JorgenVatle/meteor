@@ -2,7 +2,7 @@ import * as FS from 'node:fs';
 import * as Path from 'node:path';
 import * as process from 'node:process';
 import { build } from 'tsup';
-import { BUNDLE_ASSETS_DIR, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR } from './Config';
+import { BUNDLE_ASSETS_DIR, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR, TYPES_DIST_DIR } from './Config';
 import { meteor } from './plugin/MeteorImports';
 
 const packages = new Map<string, Package>();
@@ -15,6 +15,10 @@ class Package {
     public readonly impliedPackages = new Set<string>();
     public readonly modules = new Set<ScopedReference>();
     public readonly types = new Set<string>();
+    
+    public get srcDir() {
+        return Path.dirname(packagePath(this.name));
+    }
     
     // Defined in package.js with api.export()
     public readonly globalVariables = new Set<ScopedReference>();
@@ -174,6 +178,7 @@ async function buildPackage(parsedPackage: Package) {
             Path.join(PACKAGE_ENTRY_DIR, name, 'server.js'),
             Path.join(PACKAGE_ENTRY_DIR, name, 'common.js'),
         ],
+        
         sourcemap: true,
         splitting: false,
         target: 'node20',
@@ -186,6 +191,17 @@ async function buildPackage(parsedPackage: Package) {
         config: false,
         tsconfig: 'tsconfig.packages.json',
     })
+}
+
+async function copyTypeDefinitions(parsedPackage: Package) {
+    for (const file of parsedPackage.types) {
+        const typeDir = Path.join(TYPES_DIST_DIR, parsedPackage.name);
+        const from = Path.join(parsedPackage.srcDir, file);
+        const to = Path.join(typeDir, file);
+        
+        await FS.mkdirSync(typeDir, { recursive: true });
+        await FS.copyFileSync(from, to);
+    }
 }
 
 async function prepareEntryModules(parsedPackage: Package) {
