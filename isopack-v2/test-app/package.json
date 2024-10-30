@@ -2,7 +2,6 @@
   "name": "test-app",
   "version": "1.0.0",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "start": "cd .. && tsup && node dist/test-app/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,18 +11,26 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@meteorjs/reify": "^0.25.4",
     "@types/connect": "^3.4.38",
+    "@types/express": "^5.0.0",
     "@vlasky/whomst": "^0.1.7",
     "basic-auth-connect": "^1.1.0",
     "compression": "^1.7.4",
     "connect": "^3.7.0",
     "cookie-parser": "^1.4.7",
+    "cordova-plugin-meteor-webapp": "^2.0.4",
     "denque": "^2.1.0",
     "errorhandler": "^1.5.1",
+    "express": "^4.21.1",
+    "install": "^0.13.0",
+    "meteor-babel-helpers": "^0.0.3",
     "parseurl": "^1.3.3",
     "qs": "^6.13.0",
     "send": "^1.1.0",
     "stream-to-string": "^1.2.1",
-    "useragent": "^2.3.0"
+    "tmp": "^0.2.3",
+    "useragent": "^2.3.0",
+    "useragent-ng": "^2.4.3"
   }
 }
