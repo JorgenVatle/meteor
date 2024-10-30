@@ -133,18 +133,21 @@ export class AccountsClient extends AccountsCommon {
    */
   logout(callback) {
     this._loggingOut.set(true);
-    this.connection.apply('logout', [], {
+
+    this.connection.applyAsync('logout', [], {
+      // TODO[FIBERS]: Look this { wait: true } later.
       wait: true
-    }, (error, result) => {
-      this._loggingOut.set(false);
-      this._loginCallbacksCalled = false;
-      if (error) {
-        callback && callback(error);
-      } else {
+    })
+      .then((result) => {
+        this._loggingOut.set(false);
+        this._loginCallbacksCalled = false;
         this.makeClientLoggedOut();
         callback && callback();
-      }
-    });
+      })
+      .catch((e) => {
+        this._loggingOut.set(false);
+        callback && callback(e);
+      });
   }
 
   /**
@@ -359,33 +362,47 @@ export class AccountsClient extends AccountsCommon {
       // Note that we need to call this even if _suppressLoggingIn is true,
       // because it could be matching a _setLoggingIn(true) from a
       // half-completed pre-reconnect login method.
-      this._setLoggingIn(false);
       if (error || !result) {
         error = error || new Error(
           `No result from call to ${options.methodName}`
         );
         loginCallbacks({ error });
+        this._setLoggingIn(false);
         return;
       }
       try {
         options.validateResult(result);
       } catch (e) {
         loginCallbacks({ error: e });
+        this._setLoggingIn(false);
         return;
       }
 
       // Make the client logged in. (The user data should already be loaded!)
       this.makeClientLoggedIn(result.id, result.token, result.tokenExpires);
-      loginCallbacks({ loginDetails: result });
+
+      // use Tracker to make we sure have a user before calling the callbacks
+      Tracker.autorun(async (computation) => {
+        const user = await Tracker.withComputation(computation, () =>
+          Meteor.userAsync(),
+        );
+
+        if (user) {
+          loginCallbacks({ loginDetails: result });
+          this._setLoggingIn(false);
+          computation.stop();
+        }
+      });
+
     };
 
     if (!options._suppressLoggingIn) {
       this._setLoggingIn(true);
     }
-    this.connection.apply(
+    this.connection.applyAsync(
       options.methodName,
       options.methodArguments,
-      { wait: true, onResultReceived: onResultReceived },
+      { wait: true, onResultReceived },
       loggedInAndDataReadyCallback);
   }
 
