@@ -53,7 +53,7 @@ compilePackages().then(async () => {
     Logger.debugDir(Packages, { colors: true, depth: 3 });
     
     // Clean up entry modules from previous builds
-    FS.rmSync(PACKAGE_ENTRY_DIR, { recursive: true });
+    FS.rmSync(PACKAGE_ENTRY_DIR, { recursive: true, force: true });
     
     for (const [name, parsedPackage] of Packages) {
         await prepareEntryModules(parsedPackage)
