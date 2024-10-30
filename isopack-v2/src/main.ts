@@ -89,7 +89,7 @@ async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
         ].join('\n');
         
         await FS.writeFileSync(to, declarationContent);
-        console.debug(`Copied type definition file: ${file}`)
+        logger.debug(`Copied type definition file: ${file}`)
     }
 }
 
