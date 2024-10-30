@@ -1,3 +1,4 @@
 dist
 _packageDist
 .package-entry
+.packages
