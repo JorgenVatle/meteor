@@ -2,7 +2,7 @@ import * as FS from 'node:fs';
 import * as Path from 'node:path';
 import * as process from 'node:process';
 import { build } from 'tsup';
-import { BUNDLE_ASSETS_DIR, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR, TYPES_DIST_DIR } from './Config';
+import { BUNDLE_ASSETS_DIR, DEBUG, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR, TYPES_DIST_DIR } from './Config';
 import { packagePath } from './lib/Helpers';
 import { meteor } from './plugin/MeteorImports';
 import { PackageCordova, PackageNpm, PackageNamespace, Packages, Scope, NpmDependencies } from './lib/Package';
@@ -65,6 +65,7 @@ compilePackages().then(async () => {
         esbuildPlugins: [
             meteor(),
         ],
+        silent: !DEBUG,
         config: false,
         tsconfig: 'tsconfig.packages.json',
     })
@@ -156,9 +157,19 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             importStrings.join('\n'),
             exportStrings.join('\n'),
         ].join('\n'));
-        console.log(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
+        console.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
     });
 }
+
+const logger: Pick<typeof console, 'log' | 'debug'> = {
+    log: console.log,
+    debug(...args: any[]) {
+        if (!DEBUG) {
+            return;
+        }
+        console.debug(...args);
+    }
+};
 
 declare const globalThis: {
     Package: PackageNamespace;
