@@ -6,6 +6,10 @@ export function meteor(): Plugin {
     return {
         name: 'meteor',
         setup(build) {
+            
+            // Todo: Update TSUp config to ensure Meteor isn't externalized - in turn rendering
+            //  this plugin inaffective. Caused me some confusion when preparing packages.
+            
             build.onResolve({ filter: /^meteor\// }, (args) => {
                 const [meteor, name] = args.path.split('/');
                 const result = {
