@@ -2,7 +2,7 @@ import * as FS from 'node:fs';
 import * as Path from 'node:path';
 import * as process from 'node:process';
 import { build } from 'tsup';
-import { PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR } from './Config';
+import { BUNDLE_ASSETS_DIR, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR } from './Config';
 
 const packages = new Map<string, Package>();
 
@@ -229,6 +229,8 @@ async function prepareEntryModules(parsedPackage: Package) {
         if (scope !== 'common') {
             importStrings.unshift(`export * from ${JSON.stringify('./common')}`);
         }
+        
+        importStrings.unshift(`import ${JSON.stringify(Path.relative(entryFileDir, Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime')))}`);
         
         FS.mkdirSync(entryFileDir, { recursive: true });
         FS.writeFileSync(entryFilePath, [
