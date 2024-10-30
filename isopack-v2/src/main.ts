@@ -2,7 +2,14 @@ import * as FS from 'node:fs';
 import * as Path from 'node:path';
 import * as process from 'node:process';
 import { build } from 'tsup';
-import { BUNDLE_ASSETS_DIR, DEBUG, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR, TYPES_DIST_DIR } from './Config';
+import {
+    BUNDLE_ASSETS_DIR,
+    DEBUG,
+    PACKAGE_DIST_DIR,
+    PACKAGE_ENTRY_DIR,
+    PACKAGE_TSCONFIG_FILE,
+    TYPES_DIST_DIR,
+} from './Config';
 import { packagePath } from './lib/Helpers';
 import { Logger } from './lib/Logger';
 import { meteor } from './plugin/EsbuildPluginMeteor';
@@ -71,7 +78,7 @@ compilePackages().then(async () => {
         ],
         silent: !DEBUG,
         config: false,
-        tsconfig: 'tsconfig.packages.json',
+        tsconfig: PACKAGE_TSCONFIG_FILE,
     })
     
     Logger.log('Remember to install npm dependencies:\n', [...NpmDependencies.keys()].join(' '));
