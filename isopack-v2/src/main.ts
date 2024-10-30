@@ -43,7 +43,7 @@ async function compilePackages() {
 
 compilePackages().then(async () => {
     Logger.success(`Compilation completed - Parsed ${Packages.size} packages`);
-    console.dir(Packages, { colors: true, depth: 3 });
+    Logger.debugDir(Packages, { colors: true, depth: 3 });
     
     for (const [name, parsedPackage] of Packages) {
         await prepareEntryModules(parsedPackage)
