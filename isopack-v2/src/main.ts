@@ -5,7 +5,7 @@ import { build } from 'tsup';
 import { BUNDLE_ASSETS_DIR, DEBUG, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR, TYPES_DIST_DIR } from './Config';
 import { packagePath } from './lib/Helpers';
 import { Logger } from './lib/Logger';
-import { meteor } from './plugin/MeteorImports';
+import { meteor } from './plugin/EsbuildPluginMeteor';
 import { PackageCordova, PackageNpm, PackageNamespace, Packages, Scope, NpmDependencies } from './lib/Package';
 
 async function parse(packageName: string) {

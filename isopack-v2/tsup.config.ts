@@ -1,5 +1,5 @@
 import { defineConfig } from 'tsup';
-import { meteor } from './src/plugin/MeteorImports';
+import { meteor } from './src/plugin/EsbuildPluginMeteor';
 
 export default defineConfig({
     entry: [
