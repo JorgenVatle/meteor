@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "tsup && node dist/src/main.js",
-    "test": "tsup && node dist/test-app/app.js"
+    "test": "npm start -w test-app"
   },
   "keywords": [],
   "author": "",
