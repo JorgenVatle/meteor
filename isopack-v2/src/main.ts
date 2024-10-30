@@ -6,11 +6,11 @@ const packages = new Map<string, Package>();
 
 class Package {
     public readonly dependencies = new Set<string>();
-    public readonly assets = new Set<[Scope, string]>();
+    public readonly assets = new Set<ScopedReference>();
     public readonly entryModule = new Map<Scope, string>();
     public readonly impliedPackages = new Set<string>();
-    public readonly modules = new Set<[Scope, string]>();
-    public readonly exports = new Set<[Scope, string]>();
+    public readonly modules = new Set<ScopedReference>();
+    public readonly exports = new Set<ScopedReference>();
     
     constructor(public readonly name: string) {
         packages.set(name, this);
@@ -147,3 +147,4 @@ function normalizeOptionalArray<TType extends string>(input: TType | TType[]): T
 
 type Scope = 'server' | 'client' | 'common';
 type ScopeOption = Scope | Scope[];
+type ScopedReference = [Scope, string];
