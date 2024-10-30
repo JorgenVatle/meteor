@@ -7,7 +7,7 @@ const packages = new Map<string, Package>();
 class Package {
     public readonly dependencies = new Set<string>();
     public readonly assets = new Set<string>();
-    public readonly entryModule = new Map<PackageScope, string>();
+    public readonly entryModule = new Map<Scope, string>();
     public readonly impliedPackages = new Set<string>();
     
     
@@ -62,7 +62,7 @@ class Package {
     
     }
     
-    public mainModule(path: string, scope?: PackageScope) {
+    public mainModule(path: string, scope?: Scope) {
         if (scope) {
             this.entryModule.set(scope, path);
             return;
@@ -135,5 +135,5 @@ declare const globalThis: {
     Cordova: Cordova;
 }
 
-type PackageScope = 'server' | 'client';
-type ScopeOption = PackageScope | PackageScope[];
+type Scope = 'server' | 'client';
+type ScopeOption = Scope | Scope[];
