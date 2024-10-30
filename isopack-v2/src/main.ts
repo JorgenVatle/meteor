@@ -5,16 +5,16 @@ import { build } from 'tsup';
 import { BUNDLE_ASSETS_DIR, PACKAGE_DIST_DIR, PACKAGE_ENTRY_DIR, TYPES_DIST_DIR } from './Config';
 import { packagePath } from './lib/Helpers';
 import { meteor } from './plugin/MeteorImports';
-import { Cordova, Npm, Package, Packages, Scope, NpmDependencies } from './lib/Package';
+import { PackageCordova, PackageNpm, PackageNamespace, Packages, Scope, NpmDependencies } from './lib/Package';
 
 async function parse(packageName: string) {
     if (Packages.has(packageName)) {
         return;
     }
     
-    globalThis.Package = new Package(packageName);
-    globalThis.Npm = new Npm();
-    globalThis.Cordova = new Cordova();
+    globalThis.Package = new PackageNamespace(packageName);
+    globalThis.Npm = new PackageNpm();
+    globalThis.Cordova = new PackageCordova();
     
     await import(packagePath(packageName)).catch((error) => {
         console.warn(`Failed to load package: ${packageName}`);
@@ -74,7 +74,7 @@ compilePackages().then(async () => {
     console.error(error);
 });
 
-async function copyTypeDefinitions(parsedPackage: Package) {
+async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
     await FS.mkdirSync(TYPES_DIST_DIR, { recursive: true });
     
     for (const file of parsedPackage.types) {
@@ -93,7 +93,7 @@ async function copyTypeDefinitions(parsedPackage: Package) {
     }
 }
 
-async function prepareEntryModules(parsedPackage: Package) {
+async function prepareEntryModules(parsedPackage: PackageNamespace) {
     const scopes: Record<Scope, { imports: string[], exports: string[] }> = {
         server: {
             imports: [],
@@ -161,7 +161,7 @@ async function prepareEntryModules(parsedPackage: Package) {
 }
 
 declare const globalThis: {
-    Package: Package;
-    Npm: Npm;
-    Cordova: Cordova;
+    Package: PackageNamespace;
+    Npm: PackageNpm;
+    Cordova: PackageCordova;
 }

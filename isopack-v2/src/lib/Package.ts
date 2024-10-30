@@ -1,10 +1,10 @@
 import Path from 'node:path';
 import { normalizeOptionalArray, packagePath } from './Helpers';
 
-export const Packages = new Map<string, Package>();
+export const Packages = new Map<string, PackageNamespace>();
 export const NpmDependencies = new Map<string, string>();
 
-export class Package {
+export class PackageNamespace {
     public readonly dependencies = new Set<string>();
     public readonly assets = new Set<ScopedReference>();
     public readonly entryModule = new Map<Scope, string>();
@@ -30,7 +30,7 @@ export class Package {
         console.log(config);
     }
     
-    public onUse(handler: (api: Package) => void) {
+    public onUse(handler: (api: PackageNamespace) => void) {
         handler(this);
     }
     
@@ -84,7 +84,7 @@ export class Package {
         this.entryModule.set(scope, path);
     }
     
-    public onTest(handler: (api: Package) => void) {
+    public onTest(handler: (api: PackageNamespace) => void) {
         // handler(this);
     }
     
@@ -93,7 +93,7 @@ export class Package {
 }
 
 
-export class Npm {
+export class PackageNpm {
     public dependencies: Record<string, string> = {};
     depends(dependencies: Record<string, string>) {
         Object.entries(dependencies).forEach(([name, version]) => {
@@ -106,7 +106,7 @@ export class Npm {
     }
 }
 
-export class Cordova extends Npm {
+export class PackageCordova extends PackageNpm {
 
 }
 
