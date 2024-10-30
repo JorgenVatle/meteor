@@ -6,6 +6,7 @@
     "start": "tsup && node dist/src/main.js",
     "test": "npm start -w test-app"
   },
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
