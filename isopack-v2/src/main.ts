@@ -188,7 +188,7 @@ async function prepareEntryModules(parsedPackage: Package) {
         
         FS.mkdirSync(entryFileDir, { recursive: true });
         FS.writeFileSync(entryFilePath, importStrings.join('\n'));
-        console.log(`Created entry file: ${Path.relative(process.cwd(), entryFileDir)}`);
+        console.log(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
     });
 }
 
