@@ -202,6 +202,7 @@ async function copyTypeDefinitions(parsedPackage: Package) {
         
         await FS.mkdirSync(typeDir, { recursive: true });
         await FS.copyFileSync(from, to);
+        console.log(`Copied type definition file: ${file}`)
     }
 }
 
