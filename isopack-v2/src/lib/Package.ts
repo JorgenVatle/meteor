@@ -174,4 +174,25 @@ export class PackageCordova extends PackageNpm {
 export type Scope = 'server' | 'client' | 'common';
 export type ScopeOption = Scope | Scope[];
 export type ScopedReference = [Scope, string];
-export type EntrypointRecord = Record<Scope | string, string[]>;
+export type EntrypointRecord<TValue = string> = Record<Scope | string, TValue[]>;
+
+class ScopedRecord<TValue = string> {
+    public readonly data: Partial<EntrypointRecord<TValue>> = {
+        common: [],
+        server: [],
+        client: [],
+    };
+    
+    constructor() {}
+    
+    public get(scope: Scope): TValue[] {
+        if (!this.data[scope]) {
+            this.data[scope] = [];
+        }
+        return this.data[scope]
+    }
+    
+    public add(scope: Scope, value: TValue) {
+        this.get(scope).push(value);
+    }
+}
