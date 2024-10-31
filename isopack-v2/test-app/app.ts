@@ -1,3 +1,4 @@
+import '../dist/packages/dist/globals.mjs';
 import { Meteor } from 'meteor/meteor';
 import 'meteor/webapp';
 import 'meteor/ddp';
