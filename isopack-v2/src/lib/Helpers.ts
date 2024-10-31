@@ -27,7 +27,7 @@ export function moduleImport(config: ModuleImportConfig): string {
     const comments: string[] = [];
     let from: string | undefined = config.fromDir;
     let path = config.path;
-    let id: string = '';
+    let id: string = config.id || '';
     
     if (config.fromFile) {
         from = Path.dirname(config.fromFile);
@@ -58,14 +58,14 @@ export function moduleImport(config: ModuleImportConfig): string {
     
     
     if (config.reExport) {
-        return result(`export ${id || '*'} from ${JSON.stringify(path)};`);
+        return result(`export ${id || '*'} from ${JSON.stringify(path)}; /* Re-Export: ${config.path} */`);
     }
     
     if (id) {
-        result(`import ${id} from ${JSON.stringify(path)};`);
+        result(`import ${id} from ${JSON.stringify(path)}; /* Named import: ${config.path} */`);
     }
     
-    return result(`import ${JSON.stringify(path)};`);
+    return result(`import ${JSON.stringify(path)}; /* Default import: ${config.path} */`);
 }
 
 export function moduleReExport(config: Omit<ModuleImportConfig, 'reExport'>) {
