@@ -5,12 +5,13 @@ import * as process from 'node:process';
 import { build } from 'tsup';
 import {
     BUNDLE_ASSETS_DIR,
-    DEBUG, NO_EXTERNALIZE_NAMESPACES,
+    DEBUG,
+    NO_EXTERNALIZE_NAMESPACES,
     NPM_MASTER_MODULE,
     PACKAGE_DIST_DIR,
     PACKAGE_ENTRY_DIR,
-    PACKAGE_ENTRY_EXT,
-    PACKAGE_NPM_DIR, PACKAGE_RUNTIME_ENVIRONMENT, PACKAGE_SRC_DIR,
+    PACKAGE_NPM_DIR,
+    PACKAGE_SRC_DIR,
     PACKAGE_TSCONFIG_FILE,
     PACKAGE_TYPES_DIR,
 } from './Config';
@@ -20,6 +21,7 @@ import { NpmDependencies, PackageCordova, PackageNamespace, PackageNpm, Packages
 
 const memoryModules = {
     meteorRuntime: '',
+    entry: '',
 }
 
 async function parse(packageName: string) {
@@ -180,7 +182,7 @@ async function prepareEntryModules() {
     let count = 0;
     
     for (const [name, parsedPackage] of Packages) {
-        parsedPackage.writeEntryModules();
+        parsedPackage.createRawEntrypoints();
         const id = `pi${count++}`
         const importString = moduleImport({ path: `meteor:package/${parsedPackage.name}`, id, });
         content.push(
@@ -189,8 +191,7 @@ async function prepareEntryModules() {
         )
     }
     
-    FS.mkdirSync(PACKAGE_ENTRY_DIR, { recursive: true })
-    FS.writeFileSync(Path.join(PACKAGE_ENTRY_DIR, `server.${PACKAGE_ENTRY_EXT}`), content.join('\n'));
+    memoryModules.entry = content.join('\n');
 }
 
 async function prepareGlobalExports() {
@@ -211,8 +212,6 @@ async function prepareGlobalExports() {
     }
     
     memoryModules.meteorRuntime = globalModuleContent.join('\n');
-    
-    FS.writeFileSync(PACKAGE_RUNTIME_ENVIRONMENT, memoryModules.meteorRuntime);
 }
 
 function installNpmDependencies() {

@@ -1,7 +1,6 @@
-import FS from 'node:fs';
 import Path from 'node:path';
-import { PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT, PACKAGE_RUNTIME_ENVIRONMENT } from '../Config';
-import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
+import { PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT } from '../Config';
+import { moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
 import { Logger } from './Logger';
 import { ScopedRecord } from './ScopedRecord';
 
@@ -29,21 +28,10 @@ export class PackageNamespace {
         entrypoint.push(content.join('\n'));
     }
     
-    public writeEntryModules() {
+    public createRawEntrypoints() {
         for (const [scope, entrypoint] of Object.entries(this.entrypoint) as [Scope, string[]][]) {
-            const filePath = this.entryFilePath(scope);
             const content = this.entrypointRaw.get(scope);
             content.push(entrypoint.join('\n'));
-            
-            if (scope !== 'common') {
-                content.unshift(moduleReExport({
-                    path: this.entryFilePath('common'),
-                }));
-            } else {
-                content.unshift(moduleImport({
-                    path: PACKAGE_RUNTIME_ENVIRONMENT,
-                }));
-            }
             
             this.globalVariables.get(scope as Scope).forEach((id) => {
                 if (id === 'Random') {
@@ -52,9 +40,6 @@ export class PackageNamespace {
                 }
                 content.push(`export const ${id} = globalThis.Package[${JSON.stringify(this.name)}].${id}`);
             });
-            
-            FS.mkdirSync(Path.dirname(filePath), { recursive: true });
-            FS.writeFileSync(filePath, content.flat().join('\n'));
         }
     }
     
