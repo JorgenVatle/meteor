@@ -198,8 +198,22 @@ async function prepareGlobalExports() {
             path: Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime.ts'),
         }),
         'globalThis.Package = globalThis.Package || {}',
-        `Object.assign(globalThis.Package, ${JSON.stringify(Object.fromEntries([...Packages.keys()].map((key) => [key, {}])))})`
     ];
+    
+    function addGlobalScaffolding(packageNames: string[]) {
+        const defaults = JSON.stringify(Object.fromEntries(packageNames.map((key) => [key, {}])));
+        const imports: string[] = packageNames.map((name, index) => moduleImport({
+            path: `meteor:package/${name}`,
+            id: `i${index}`,
+        }));
+        
+        globalModuleContent.push(...imports);
+        globalModuleContent.push(
+            `Object.assign(globalThis.Package, ${defaults})`,
+        )
+    }
+    
+    addGlobalScaffolding([...Packages.keys()]);
     
     function addExports(packageName: string, exports: string[]) {
         const packageIdentifier = `globalThis.Package[${JSON.stringify(packageName)}]`;
