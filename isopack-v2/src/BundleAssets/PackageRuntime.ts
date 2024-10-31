@@ -6,7 +6,7 @@ class Npm {
         try {
             return require(name);
         } catch (error) {
-            console.error(`Cannot find npm module ${name}. Make sure you have it installed in your project.`)
+            console.error(`MeteorPackageNpm Error: Cannot find npm module ${name}. Make sure you have it installed in your project.`)
             console.error(` L $ npm i ${name}`);
             throw error;
         }
