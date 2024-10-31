@@ -1,5 +1,5 @@
 import Path from 'node:path';
-import process from 'node:process';
+import { PACKAGE_SRC_DIR } from '../Config';
 
 export function normalizeOptionalArray<TType extends string>(input: TType | TType[]): TType[] {
     if (Array.isArray(input)) {
@@ -9,7 +9,7 @@ export function normalizeOptionalArray<TType extends string>(input: TType | TTyp
 }
 
 export function packagePath(name: string) {
-    return Path.join(process.cwd(), '..', 'packages', name, 'package.js');
+    return Path.join(PACKAGE_SRC_DIR, name, 'package.js');
 }
 
 
