@@ -1,3 +1,4 @@
+import FS from 'node:fs';
 import Path from 'node:path';
 import { PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT } from '../Config';
 import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
@@ -13,7 +14,7 @@ export class PackageNamespace {
     public readonly impliedPackages = new Set<string>();
     public readonly modules = new Set<ScopedReference>();
     public readonly types = new Set<string>();
-    public readonly entrypoint: Partial<Record<Scope | string, string[]>> = {
+    public readonly entrypoint: Partial<EntrypointRecord> = {
         client: [],
         common: [],
         server: [],
@@ -24,12 +25,29 @@ export class PackageNamespace {
         entrypoint.push(content.join('\n'));
     }
     
+    public writeEntryModules() {
+        for (const [scope, entrypoint] of Object.entries(this.entrypoint)) {
+            const filePath = this.entryFilePath(scope);
+            const content = [entrypoint?.join('\n') || []];
+            
+            if (scope !== 'common') {
+                content.push(this.entrypoint.common?.join('\n') || '');
+            }
+            
+            FS.writeFileSync(filePath, content.join('\n'));
+        }
+    }
+    
     public get srcDir() {
         return Path.dirname(packagePath(this.name));
     }
     
     public get entryDir() {
         return Path.join(PACKAGE_ENTRY_DIR, this.name);
+    }
+    
+    public entryFilePath(scope: Scope | string) {
+        return Path.join(this.entryDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
     }
     
     // Defined in package.js with api.export()
@@ -147,3 +165,4 @@ export class PackageCordova extends PackageNpm {
 export type Scope = 'server' | 'client' | 'common';
 export type ScopeOption = Scope | Scope[];
 export type ScopedReference = [Scope, string];
+export type EntrypointRecord = Record<Scope | string, string[]>;
