@@ -36,7 +36,9 @@ export class PackageNamespace {
             content.push(entrypoint.join('\n'));
             
             if (scope !== 'common') {
-                content.push(this.entrypoint.common?.join('\n') || '');
+                content.push(moduleReExport({
+                    path: this.entryFilePath('common'),
+                }));
             } else {
                 content.unshift(moduleImport({
                     path: PACKAGE_RUNTIME_ENVIRONMENT,
