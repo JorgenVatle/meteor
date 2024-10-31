@@ -10,7 +10,7 @@ export const PACKAGE_DIST_DIR = Path.join(PACKAGE_TEMP_DIR, 'dist');
 export const PACKAGE_ENTRY_DIR = Path.join(PACKAGE_TEMP_DIR, 'entry');
 export const PACKAGE_TSCONFIG_FILE = Path.join(ROOT_DIR, 'tsconfig.packages.json');
 export const PACKAGE_TYPES_DIR = Path.join(PACKAGE_TEMP_DIR, 'types', 'meteor');
-export const PACKAGE_NPM_DIR = Path.join(PACKAGE_TEMP_DIR, '.npm');
+export const PACKAGE_NPM_DIR = Path.join(PACKAGE_TEMP_DIR, '.npm', 'package');
 export const PACKAGE_ENTRY_EXT = 'mjs';
 
 

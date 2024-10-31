@@ -221,6 +221,14 @@ function installNpmDependencies() {
     
     if (FS.existsSync(lockfilePath)) {
         lockfile = FS.readFileSync(Path.join(ROOT_DIR, 'package-lock.json'), 'utf8');
+    } else {
+        const { status } = spawnSync('npm', ['init', '-y'], {
+            cwd: PACKAGE_NPM_DIR,
+            stdio: 'inherit'
+        });
+        if (status) {
+            throw new Error('Failed to prepare package.json for Meteor package dependencies!');
+        }
     }
     
     const missingDependencies: string[] = [];
@@ -240,9 +248,10 @@ function installNpmDependencies() {
     Logger.warn('We are now installing these dependencies for you. This might take a minute or two...');
     Logger.warn(missingDependencies.map((name) => ` | ${name}`).join('\n'));
     
-    const { error, stderr, stdout } = spawnSync(`npm`, ['i', ...missingDependencies], {
+    
+    const { error, stderr, stdout } = spawnSync(`npm`, ['i', '--save', ...missingDependencies], {
         cwd: PACKAGE_NPM_DIR,
-        stdio: ['inherit', 'inherit', 'inherit', 'inherit'],
+        stdio: 'inherit',
     });
     
     if (stdout) {
