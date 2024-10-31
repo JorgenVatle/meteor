@@ -208,16 +208,25 @@ async function prepareGlobalExports() {
         globalModuleContent.push(`Object.assign(${packageIdentifier}, ${exportMap})`)
     }
     
+    function addGlobal(keys: string[]) {
+        globalModuleContent.push(`Object.assign(globalThis, { ${keys.map((id) => `${id}: globalThis.${id}`).join(', ')} })`);
+    }
+    
     const placeholderContext: Record<string, any> = {
         meteorEnv: null,
         Package: {},
     };
     const globalExports = new Map<string, Set<string>>();
+    const global = new Set<string>();
     for (const [name, parsedPackage] of Packages) {
         const exports = globalExports.get(name) || new Set<string>();
         globalExports.set(parsedPackage.name, exports);
-        parsedPackage.globalVariables.entries.map(([scope, keys]) => keys.forEach((key) => exports.add(key)));
+        parsedPackage.globalVariables.entries.map(([scope, keys]) => keys.forEach((key) => {
+            exports.add(key);
+            global.add(key);
+        }));
         addExports(name, [...exports]);
+        addGlobal([...global]);
     }
     
     Object.entries(placeholderContext).forEach(([key, value]) => {
