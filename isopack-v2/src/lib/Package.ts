@@ -1,6 +1,6 @@
 import FS from 'node:fs';
 import Path from 'node:path';
-import { PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT } from '../Config';
+import { PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT, PACKAGE_RUNTIME_ENVIRONMENT } from '../Config';
 import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
 import { Logger } from './Logger';
 
@@ -34,8 +34,7 @@ export class PackageNamespace {
                 content.push(this.entrypoint.common?.join('\n') || '');
             } else {
                 content.unshift(moduleImport({
-                    path: Path.join(PACKAGE_ENTRY_DIR, 'globals.js'),
-                    normalizeFileExtension: PACKAGE_ENTRY_EXT,
+                    path: PACKAGE_RUNTIME_ENVIRONMENT,
                 }))
             }
             

@@ -10,7 +10,7 @@ import {
     PACKAGE_DIST_DIR,
     PACKAGE_ENTRY_DIR,
     PACKAGE_ENTRY_EXT,
-    PACKAGE_NPM_DIR,
+    PACKAGE_NPM_DIR, PACKAGE_RUNTIME_ENVIRONMENT,
     PACKAGE_TSCONFIG_FILE,
     PACKAGE_TYPES_DIR,
 } from './Config';
@@ -175,7 +175,7 @@ async function prepareGlobalExports() {
         });
     }
     
-    FS.writeFileSync(Path.join(PACKAGE_ENTRY_DIR, 'globals.js'), globalModuleContent.join('\n'));
+    FS.writeFileSync(PACKAGE_RUNTIME_ENVIRONMENT, globalModuleContent.join('\n'));
 }
 
 function installNpmDependencies() {
