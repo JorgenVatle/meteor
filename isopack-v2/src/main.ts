@@ -207,7 +207,10 @@ async function prepareGlobalExports() {
             globalModuleContent.push(
                 `// ${name}`,
                 moduleImport({ id: importName, path: `meteor/${parsedPackage.name}` }),
-                exports.map((id) => `globalThis.${id} = ${importName}?.${id} || globalThis.${id}`).join('\n'),
+                exports.map((id) => [
+                    `globalThis.${id} = ${importName}?.${id} || globalThis.${id}`,
+                    `Object.assign(globalThis.Packages, { ${id} })`,
+                ]).flat().join('\n'),
                 ''
             );
         })
