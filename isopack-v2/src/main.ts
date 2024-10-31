@@ -220,7 +220,7 @@ function installNpmDependencies() {
     let lockfile = '';
     
     if (FS.existsSync(lockfilePath)) {
-        lockfile = FS.readFileSync(Path.join(ROOT_DIR, 'package-lock.json'), 'utf8');
+        lockfile = FS.readFileSync(lockfilePath, 'utf8');
     } else {
         const { status } = spawnSync('npm', ['init', '-y'], {
             cwd: PACKAGE_NPM_DIR,
