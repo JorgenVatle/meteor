@@ -1,4 +1,5 @@
 import { defineConfig } from 'tsup';
+import { NO_EXTERNALIZE_NAMESPACES } from './src/Config';
 import { meteor } from './src/plugin/EsbuildPluginMeteor';
 
 export default defineConfig({
@@ -12,7 +13,7 @@ export default defineConfig({
     splitting: false,
     platform: 'node',
     target: 'node20',
-    noExternal: ['meteor'],
+    noExternal: NO_EXTERNALIZE_NAMESPACES,
     format: 'esm',
     esbuildPlugins: [
        meteor({ external: false }),

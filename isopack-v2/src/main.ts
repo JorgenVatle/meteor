@@ -5,7 +5,7 @@ import * as process from 'node:process';
 import { build } from 'tsup';
 import {
     BUNDLE_ASSETS_DIR,
-    DEBUG,
+    DEBUG, NO_EXTERNALIZE_NAMESPACES,
     NPM_MASTER_MODULE,
     PACKAGE_DIST_DIR,
     PACKAGE_ENTRY_DIR,
@@ -79,7 +79,7 @@ compilePackages().then(async () => {
         platform: 'node',
         format: 'esm',
         skipNodeModulesBundle: true,
-        noExternal: [/^meteor\//],
+        noExternal: NO_EXTERNALIZE_NAMESPACES,
         esbuildPlugins: [
             meteor({ external: false }),
         ],
