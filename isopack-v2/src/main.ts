@@ -130,18 +130,15 @@ async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
 }
 
 async function prepareEntryModules(parsedPackage: PackageNamespace) {
-    const scopes: Record<Scope, { imports: string[], exports: string[] }> = {
+    const scopes: Record<Scope, { imports: string[], }> = {
         server: {
             imports: [],
-            exports: [],
         },
         client: {
             imports: [],
-            exports: [],
         },
         common: {
             imports: [],
-            exports: [],
         },
     };
     const prepareScope = (scope: Scope) => {
@@ -150,7 +147,6 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         }
         scopes[scope] = {
             imports: [],
-            exports: []
         }
     }
     for (const [scope, path] of parsedPackage.entryModule) {
@@ -161,11 +157,6 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
     for (const [scope, path] of parsedPackage.modules) {
         prepareScope(scope);
         scopes[scope].imports.push(path);
-    }
-    
-    for (const [scope, id] of parsedPackage.globalVariables) {
-        prepareScope(scope);
-        scopes[scope].exports.push(id)
     }
     
     FS.mkdirSync(parsedPackage.entryDir, { recursive: true });
