@@ -50,7 +50,7 @@ export class PackageNamespace {
                     content.push('console.log(this)');
                     return;
                 }
-                content.push(`export const ${id} = Package[${JSON.stringify(this.name)}].${id}`);
+                content.push(`export const ${id} = globalThis.Package[${JSON.stringify(this.name)}].${id}`);
             });
             
             FS.mkdirSync(Path.dirname(filePath), { recursive: true });
