@@ -52,20 +52,21 @@ export function moduleImport(config: ModuleImportConfig): string {
     const result = (string: string) => {
         return [
             ...comments.map((message) => `// ${message}`),
-            string
+            string,
+            ''
         ].join('\n');
     }
     
     
     if (config.reExport) {
-        return result(`export ${id || '*'} from ${JSON.stringify(path)}; /* Re-Export: ${config.path} */`);
+        return result(`export ${id || '*'} from ${JSON.stringify(path)}; /* Re-Export */`);
     }
     
     if (id) {
-        result(`import ${id} from ${JSON.stringify(path)}; /* Named import: ${config.path} */`);
+        result(`import ${id} from ${JSON.stringify(path)}; /* Named import */`);
     }
     
-    return result(`import ${JSON.stringify(path)}; /* Default import: ${config.path} */`);
+    return result(`import ${JSON.stringify(path)}; /* Default import */`);
 }
 
 export function moduleReExport(config: Omit<ModuleImportConfig, 'reExport'>) {
