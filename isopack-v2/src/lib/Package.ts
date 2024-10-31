@@ -3,6 +3,7 @@ import Path from 'node:path';
 import { PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT, PACKAGE_RUNTIME_ENVIRONMENT } from '../Config';
 import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
 import { Logger } from './Logger';
+import { ScopedRecord } from './ScopedRecord';
 
 export const Packages = new Map<string, PackageNamespace>();
 export const NpmDependencies = new Map<string, string>();
@@ -175,27 +176,3 @@ export type ScopeOption = Scope | Scope[];
 export type ScopedReference = [Scope, string];
 export type EntrypointRecord<TValue = string> = Record<Scope | string, TValue[]>;
 
-class ScopedRecord<TValue = string> {
-    public readonly data: Partial<EntrypointRecord<TValue>> = {
-        common: [],
-        server: [],
-        client: [],
-    };
-    
-    constructor() {}
-    
-    public get(scope: Scope): TValue[] {
-        if (!this.data[scope]) {
-            this.data[scope] = [];
-        }
-        return this.data[scope]
-    }
-    
-    public add(scope: Scope, value: TValue) {
-        this.get(scope).push(value);
-    }
-    
-    public get entries() {
-        return Object.entries(this.data) as [keyof EntrypointRecord, TValue][];
-    }
-}
