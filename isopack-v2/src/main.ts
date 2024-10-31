@@ -77,7 +77,8 @@ compilePackages().then(async () => {
         entry: [PACKAGE_ENTRY_DIR],
         
         sourcemap: true,
-        splitting: true,
+        splitting: false,
+        shims: true,
         cjsInterop: true,
         target: 'node20',
         platform: 'node',
@@ -172,7 +173,8 @@ async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
 
 async function prepareEntryModules() {
     const content: string[] = [
-        `export const Package = globalThis.Package = {}`,
+        `const Package = globalThis.Package = {}`,
+        'export { Package }',
     ];
     
     let count = 0;
