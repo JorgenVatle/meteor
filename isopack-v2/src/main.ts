@@ -169,9 +169,10 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
     }
     
     Object.entries(scopes).forEach(([scope, data]) => {
-        const entryFilePath = Path.join(parsedPackage.srcDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
-        
-        const importStrings = data.imports.map((filePath) => moduleReExport({ path: Path.join(PACKAGE_SRC_DIR, parsedPackage.name, filePath) }));
+        const entryFilePath = Path.join(parsedPackage.entryDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
+        const importStrings = data.imports.map((filePath) => moduleReExport({
+            path: Path.join(PACKAGE_SRC_DIR, parsedPackage.name, filePath)
+        }));
         
         Logger.debug({ [`${parsedPackage.name}.${scope}`]: importStrings })
         
@@ -186,7 +187,7 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             path: Path.join(PACKAGE_ENTRY_DIR, 'globals.js'),
         }))
         
-        FS.mkdirSync(parsedPackage.srcDir, { recursive: true });
+        FS.mkdirSync(parsedPackage.entryDir, { recursive: true });
         FS.writeFileSync(entryFilePath, importStrings.join('\n'));
         
         Logger.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
