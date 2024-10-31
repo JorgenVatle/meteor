@@ -1,6 +1,6 @@
 import Path from 'node:path';
-import { PACKAGE_ENTRY_DIR } from '../Config';
-import { normalizeOptionalArray, packagePath } from './Helpers';
+import { PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT } from '../Config';
+import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
 import { Logger } from './Logger';
 
 export const Packages = new Map<string, PackageNamespace>();
@@ -79,6 +79,11 @@ export class PackageNamespace {
         for (const file of normalizeOptionalArray(files)) {
             for (const scope of normalizeOptionalArray(scopeOption)) {
                 this.modules.add([scope, file]);
+                this.pushToEntrypoint(scope, [
+                    moduleReExport({
+                        path: Path.join(this.srcDir, file),
+                    })
+                ]);
             }
         }
     }
@@ -95,6 +100,11 @@ export class PackageNamespace {
     
     public mainModule(path: string, scope: Scope = 'common') {
         this.entryModule.set(scope, path);
+        this.pushToEntrypoint(scope, [
+            moduleReExport({
+                path: Path.join(this.srcDir, path),
+            })
+        ]);
     }
     
     public onTest(handler: (api: PackageNamespace) => void) {
