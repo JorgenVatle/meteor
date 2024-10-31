@@ -8,7 +8,7 @@ import {
     PACKAGE_DIST_DIR,
     PACKAGE_ENTRY_DIR,
     PACKAGE_TSCONFIG_FILE,
-    TYPES_DIST_DIR,
+    PACKAGE_TYPES_DIR,
 } from './Config';
 import { moduleImport, moduleReExport, packagePath } from './lib/Helpers';
 import { Logger } from './lib/Logger';
@@ -107,11 +107,11 @@ function createNpmMasterModule() {
 }
 
 async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
-    FS.mkdirSync(TYPES_DIST_DIR, { recursive: true });
+    FS.mkdirSync(PACKAGE_TYPES_DIR, { recursive: true });
     
     for (const file of parsedPackage.types) {
         const from = Path.join(parsedPackage.srcDir, file);
-        const to = Path.join(TYPES_DIST_DIR, file);
+        const to = Path.join(PACKAGE_TYPES_DIR, file);
         
         const content = FS.readFileSync(from);
         const declarationContent = [
