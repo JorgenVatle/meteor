@@ -159,20 +159,14 @@ async function prepareGlobalExports() {
         })
     ];
     for (const [name, parsedPackage] of Packages) {
-        const scopes: Partial<Record<Scope, string[]>> = {};
-        for (const [scope, id] of parsedPackage.globalVariables) {
-            const content = scopes[scope] = scopes[scope] || [];
-            
-            content.push(`globalThis.${id} = globalThis.${id}`);
-        }
-        const entries = Object.entries(scopes);
-        if (!entries.length) {
-            continue;
-        }
-        globalModuleContent.push(`// ${name}`)
-        entries.forEach(([scope, content]) => {
-            globalModuleContent.push(content.join('\n'));
-        });
+        parsedPackage.globalVariables.entries.forEach(([scope, exports]) => {
+            if (!exports.length) return;
+            globalModuleContent.push(
+                `// ${name}`,
+                exports.map((id) => `globalThis.${id} = globalThis.${id}`).join('\n'),
+                ''
+            );
+        })
     }
     
     FS.writeFileSync(PACKAGE_RUNTIME_ENVIRONMENT, globalModuleContent.join('\n'));
