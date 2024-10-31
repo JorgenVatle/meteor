@@ -1,5 +1,5 @@
 import Path from 'node:path';
-import { PACKAGE_SRC_DIR } from '../Config';
+import { PACKAGE_ENTRY_EXT, PACKAGE_SRC_DIR } from '../Config';
 
 export function normalizeOptionalArray<TType extends string>(input: TType | TType[]): TType[] {
     if (Array.isArray(input)) {
@@ -35,6 +35,10 @@ export function moduleImport(config: ModuleImportConfig) {
         path = './' + Path.relative(from, path);
     }
     
+    if (PACKAGE_ENTRY_EXT) {
+        path += `.${PACKAGE_ENTRY_EXT}`;
+    }
+    
     if (config.reExport) {
         return `export * from ${JSON.stringify(path)};`;
     }
@@ -54,6 +58,7 @@ interface ModuleImportConfig {
      * Path to the module to import. Can be absolute or relative.
      */
     path: string;
+    
     /**
      * Whether to create a relative import path, starting from the directory of this file.
      */
