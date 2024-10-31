@@ -3,7 +3,12 @@ const require = createRequire(import.meta.url);
 
 class Npm {
     public require(name: string) {
-        return require(name);
+        try {
+            return require(name);
+        } catch (error) {
+            console.error(`Could not require() package "${name}"`)
+            throw error;
+        }
     }
 }
 
