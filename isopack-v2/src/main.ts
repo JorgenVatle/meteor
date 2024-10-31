@@ -192,7 +192,7 @@ async function prepareEntryModules() {
     FS.mkdirSync(PACKAGE_ENTRY_DIR, { recursive: true })
     FS.writeFileSync(Path.join(PACKAGE_ENTRY_DIR, `server.${PACKAGE_ENTRY_EXT}`), content.join('\n'));
 }
-
+let i = 0;
 async function prepareGlobalExports() {
     const globalModuleContent: string[] = [
         moduleImport({
@@ -202,9 +202,12 @@ async function prepareGlobalExports() {
     for (const [name, parsedPackage] of Packages) {
         parsedPackage.globalVariables.entries.forEach(([scope, exports]) => {
             if (!exports.length) return;
+            const importName = `gt${i++}`;
+            
             globalModuleContent.push(
                 `// ${name}`,
-                exports.map((id) => `globalThis.${id} = globalThis.${id}`).join('\n'),
+                moduleImport({ id: importName, path: `meteor/${parsedPackage.name}` }),
+                exports.map((id) => `globalThis.${id} = ${importName}?.${id} || globalThis.${id}`).join('\n'),
                 ''
             );
         })
