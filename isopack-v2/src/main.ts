@@ -10,7 +10,7 @@ import {
     PACKAGE_DIST_DIR,
     PACKAGE_ENTRY_DIR,
     PACKAGE_ENTRY_EXT,
-    PACKAGE_NPM_DIR, PACKAGE_RUNTIME_ENVIRONMENT,
+    PACKAGE_NPM_DIR, PACKAGE_RUNTIME_ENVIRONMENT, PACKAGE_SRC_DIR,
     PACKAGE_TSCONFIG_FILE,
     PACKAGE_TYPES_DIR,
 } from './Config';
@@ -81,7 +81,38 @@ compilePackages().then(async () => {
         skipNodeModulesBundle: true,
         noExternal: NO_EXTERNALIZE_NAMESPACES,
         esbuildPlugins: [
-            meteor({ external: false }),
+            {
+                name: 'meteor:packages',
+                setup(build) {
+                    build.onResolve({ filter: /^meteor\// }, (args) => {
+                        const [_, packageName, ...path] = args.path.split('/');
+                        const result = {
+                            path: packageName,
+                            namespace: 'meteor:package',
+                        }
+                        // Skip virtual module when accessing Meteor package assets directly.
+                        if (path.length) {
+                            result.path = Path.join(PACKAGE_SRC_DIR, packageName, path.join('/').replace(/\.(js|mjs)$/, '') + '.js')
+                            result.namespace = 'file';
+                        }
+                        console.log(result);
+                        return result;
+                    });
+                    build.onLoad({ filter: /.*/, namespace: 'meteor:package' }, (args) => {
+                        const [name, ...path] = args.path.split('/');
+                        const parsedPackage = Packages.get(name);
+                        const contents = parsedPackage?.entrypointRaw.get('server').join('\n');
+                        if (!contents) {
+                            console.warn(`Failed to get contents for ${parsedPackage?.name}`);
+                        }
+                        return {
+                            contents,
+                            loader: 'js',
+                            resolveDir: parsedPackage?.entryDir,
+                        }
+                    })
+                }
+            }
         ],
         silent: !DEBUG,
         config: false,
