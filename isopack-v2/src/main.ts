@@ -115,7 +115,7 @@ compilePackages().then(async () => {
                             console.warn(`Failed to get contents for ${parsedPackage?.name}`);
                         }
                         return {
-                            contents,
+                            contents: [memoryModules.meteorRuntime, contents].join('\n'),
                             loader: 'js',
                             resolveDir: parsedPackage?.entryDir,
                         }
