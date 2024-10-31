@@ -169,7 +169,7 @@ async function prepareGlobalExports() {
             const importId = `m${count++}`;
             
             content.push(moduleImport({
-                path: Path.join(PACKAGE_ENTRY_DIR, parsedPackage.name, `${scope}.${PACKAGE_ENTRY_EXT}`),
+                path: Path.join(parsedPackage.entryDir, `${scope}.${PACKAGE_ENTRY_EXT}`),
                 id: importId,
             }));
             
