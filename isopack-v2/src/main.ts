@@ -184,7 +184,7 @@ async function prepareEntryModules() {
     for (const [name, parsedPackage] of Packages) {
         parsedPackage.createRawEntrypoints();
         const id = `pi${count++}`
-        const importString = moduleImport({ path: `meteor:package/${parsedPackage.name}`, id, });
+        const importString = moduleImport({ path: `meteor:package/common/${parsedPackage.name}`, id, });
         content.push(
             importString,
             `Package[${JSON.stringify(name)}] = ${id}`
