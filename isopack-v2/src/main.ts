@@ -173,8 +173,8 @@ async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
 
 async function prepareEntryModules() {
     const content: string[] = [
-        `const Package = globalThis.Package = {}`,
-        'export { Package }',
+        `export const Package = {}`,
+        `Object.assign(globalThis, { Package })`,
     ];
     
     let count = 0;
