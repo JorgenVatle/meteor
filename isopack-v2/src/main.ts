@@ -153,7 +153,6 @@ async function prepareEntryModules() {
 }
 
 async function prepareGlobalExports() {
-    let count = 0;
     const globalModuleContent: string[] = [
         moduleImport({
             path: Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime.ts'),
@@ -163,14 +162,8 @@ async function prepareGlobalExports() {
         const scopes: Partial<Record<Scope, string[]>> = {};
         for (const [scope, id] of parsedPackage.globalVariables) {
             const content = scopes[scope] = scopes[scope] || [];
-            const importId = `m${count++}`;
             
-            content.push(moduleImport({
-                path: Path.join(parsedPackage.entryDir, `${scope}.${PACKAGE_ENTRY_EXT}`),
-                id: importId,
-            }));
-            
-            content.push(`globalThis.${id} = ${importId}['${id}']`);
+            content.push(`globalThis.${id} = globalThis.${id}`);
         }
         const entries = Object.entries(scopes);
         if (!entries.length) {
