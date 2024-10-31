@@ -36,7 +36,7 @@ export function moduleImport(config: ModuleImportConfig) {
     }
     
     if (PACKAGE_ENTRY_EXT) {
-        path += `.${PACKAGE_ENTRY_EXT}`;
+        path = path.replace(/\.(js|mjs)$/, `.${PACKAGE_ENTRY_EXT}`);
     }
     
     if (config.reExport) {
