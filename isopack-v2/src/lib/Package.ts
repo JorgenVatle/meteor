@@ -36,7 +36,7 @@ export class PackageNamespace {
             content.push(entrypoint.join('\n'));
             
             if (scope !== 'common') {
-                content.push(moduleReExport({
+                content.unshift(moduleReExport({
                     path: this.entryFilePath('common'),
                 }));
             } else {
@@ -46,6 +46,10 @@ export class PackageNamespace {
             }
             
             this.globalVariables.get(scope as Scope).forEach((id) => {
+                if (id === 'Random') {
+                    content.push('console.log(this)');
+                    return;
+                }
                 content.push(`export const ${id} = Package[${JSON.stringify(this.name)}].${id}`);
             });
             
