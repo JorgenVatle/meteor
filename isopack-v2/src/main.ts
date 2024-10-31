@@ -168,6 +168,8 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         scopes[scope].exports.push(id)
     }
     
+    FS.mkdirSync(parsedPackage.entryDir, { recursive: true });
+    
     Object.entries(scopes).forEach(([scope, data]) => {
         const entryFilePath = Path.join(parsedPackage.entryDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
         const importStrings = data.imports.map((filePath) => moduleReExport({
@@ -187,7 +189,6 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             path: Path.join(PACKAGE_ENTRY_DIR, 'globals.js'),
         }))
         
-        FS.mkdirSync(parsedPackage.entryDir, { recursive: true });
         FS.writeFileSync(entryFilePath, importStrings.join('\n'));
         
         Logger.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
