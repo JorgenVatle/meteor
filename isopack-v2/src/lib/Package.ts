@@ -1,6 +1,6 @@
 import FS from 'node:fs';
 import Path from 'node:path';
-import { PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT } from '../Config';
+import { PACKAGE_TEMP_ENTRY_DIR, PACKAGE_ENTRY_EXT } from '../Config';
 import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
 import { Logger } from './Logger';
 
@@ -26,6 +26,8 @@ export class PackageNamespace {
     }
     
     public writeEntryModules() {
+        FS.mkdirSync(PACKAGE_TEMP_ENTRY_DIR, { recursive: true });
+        
         for (const [scope, entrypoint] of Object.entries(this.entrypoint)) {
             const filePath = this.entryFilePath(scope);
             const content = [entrypoint?.join('\n') || []];
@@ -43,7 +45,7 @@ export class PackageNamespace {
     }
     
     public get entryDir() {
-        return Path.join(PACKAGE_ENTRY_DIR, this.name);
+        return Path.join(PACKAGE_TEMP_ENTRY_DIR, this.name);
     }
     
     public entryFilePath(scope: Scope | string) {
