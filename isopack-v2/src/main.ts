@@ -201,6 +201,13 @@ async function prepareGlobalExports() {
         `Object.assign(globalThis.Package, ${JSON.stringify(Object.fromEntries([...Packages.keys()].map((key) => [key, {}])))})`
     ];
     
+    function addExports(packageName: string, exports: string[]) {
+        const packageIdentifier = `globalThis.Package[${JSON.stringify(packageName)}]`;
+        const exportLines = exports.map((id) => `${JSON.stringify(id)}: globalThis.${id}`);
+        const exportMap = ['{', ...exportLines, '}'].join('\n')
+        globalModuleContent.push(`Object.assign(${packageIdentifier}, ${exportMap})`)
+    }
+    
     const placeholderContext: Record<string, any> = {
         meteorEnv: null,
         Package: {},
@@ -209,20 +216,7 @@ async function prepareGlobalExports() {
     for (const [name, parsedPackage] of Packages) {
         const exports = globalExports.get(name) || new Set<string>();
         globalExports.set(parsedPackage.name, exports);
-        for (const [scope, ids] of parsedPackage.globalVariables.entries) {
-            ids.forEach((id) => {
-                exports.add(id);
-                Object.assign(placeholderContext, { [id]: null })
-            });
-        }
-        const exportsContent = []
-        for (const key of exports) {
-            exportsContent.push(`${JSON.stringify(key)}: globalThis.${key} || globalThis.Package?.[${JSON.stringify(name)}]?.${key}`);
-        }
-        
-        const globalPackageIdentifier = `globalThis.Package[${JSON.stringify(parsedPackage.name)}]`;
-        globalModuleContent.push(`${globalPackageIdentifier} = ${globalPackageIdentifier} || {}`);
-        globalModuleContent.push(`Object.assign(${globalPackageIdentifier}, { ${exportsContent.join(',\n')} })`);
+        addExports(name, [...exports]);
     }
     
     Object.entries(placeholderContext).forEach(([key, value]) => {
