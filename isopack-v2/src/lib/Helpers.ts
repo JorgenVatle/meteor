@@ -1,5 +1,5 @@
 import Path from 'node:path';
-import { PACKAGE_ENTRY_EXT, PACKAGE_SRC_DIR } from '../Config';
+import { PACKAGE_ENTRY_EXT, PACKAGE_SRC_DIR, PACKAGE_SRC_DIR_NON_CORE } from '../Config';
 
 export function normalizeOptionalArray<TType extends string>(input: TType | TType[]): TType[] {
     if (Array.isArray(input)) {
@@ -9,7 +9,13 @@ export function normalizeOptionalArray<TType extends string>(input: TType | TTyp
 }
 
 export function packagePath(name: string) {
-    return Path.join(PACKAGE_SRC_DIR, name, 'package.js');
+    let srcDir = PACKAGE_SRC_DIR;
+    
+    if (['mongo-decimal'].includes(name)) {
+        srcDir = PACKAGE_SRC_DIR_NON_CORE;
+    }
+    
+    return Path.join(srcDir, name, 'package.js');
 }
 
 
