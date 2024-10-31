@@ -211,7 +211,9 @@ async function prepareGlobalExports() {
             exportsContent.push(`${JSON.stringify(key)}: globalThis.${key}`);
         }
         
-        globalModuleContent.push(`Object.assign(globalThis.Packages[${JSON.stringify(parsedPackage.name)}], { ${exportsContent.join(',\n')} })`);
+        const globalPackageIdentifier = `globalThis.Packages[${JSON.stringify(parsedPackage.name)}]`;
+        globalModuleContent.push(`${globalPackageIdentifier} = ${globalPackageIdentifier} || {}`);
+        globalModuleContent.push(`Object.assign(${globalPackageIdentifier}, { ${exportsContent.join(',\n')} })`);
     }
     
     memoryModules.meteorRuntime = globalModuleContent.join('\n');
