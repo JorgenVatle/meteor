@@ -167,6 +167,7 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
     Object.entries(scopes).forEach(([scope, data]) => {
         const entryFileDir = Path.join(PACKAGE_ENTRY_DIR, parsedPackage.name);
         const entryFilePath = Path.join(entryFileDir, `${scope}.js`);
+        const globalsFilePath = Path.join(entryFileDir, `${scope}.globals.js`);
         const packageDir = Path.join(process.cwd(), '..', 'packages', parsedPackage.name);
         const importStrings = data.imports.map((path) => {
             const absolutePath = Path.join(packageDir, path);
@@ -175,22 +176,28 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             return `export * from ${JSON.stringify(relativePath)}`;
         });
         
-        const exportStrings = data.exports.map((id) => [
-            `globalThis.${id} = globalThis.${id}`,
-            `export const ${id} = globalThis.${id}`
-        ]).flat();
+        const exportStrings: string[] = [];
+        const globalStrings: string[] = [];
+        
+        data.exports.forEach((id) => {
+            globalStrings.push(`globalThis.${id} = globalThis.${id}`);
+            exportStrings.push(`export const ${id} = globalThis.${id}`);
+        });
         
         if (scope !== 'common') {
             importStrings.unshift(`export * from ${JSON.stringify('./common')}`);
         }
         
         importStrings.unshift(`import ${JSON.stringify(Path.relative(entryFileDir, Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime')))}`);
+        importStrings.unshift(`import ${JSON.stringify('./' + Path.relative(entryFileDir, globalsFilePath))}`);
         
         FS.mkdirSync(entryFileDir, { recursive: true });
         FS.writeFileSync(entryFilePath, [
             importStrings.join('\n'),
             exportStrings.join('\n'),
         ].join('\n'));
+        
+        FS.writeFileSync(globalsFilePath, globalStrings.join('\n'));
         Logger.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
     });
 }
