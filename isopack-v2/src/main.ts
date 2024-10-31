@@ -183,6 +183,10 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             }));
         }
         
+        importStrings.push(moduleImport({
+            path: Path.join(PACKAGE_ENTRY_DIR, 'globals.js'),
+        }))
+        
         FS.mkdirSync(entryFileDir, { recursive: true });
         FS.writeFileSync(entryFilePath, importStrings.join('\n'));
         
