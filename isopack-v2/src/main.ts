@@ -81,7 +81,7 @@ compilePackages().then(async () => {
         skipNodeModulesBundle: true,
         noExternal: [/^meteor\//],
         esbuildPlugins: [
-            meteor(),
+            meteor({ external: false }),
         ],
         silent: !DEBUG,
         config: false,
