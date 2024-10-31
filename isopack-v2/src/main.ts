@@ -12,7 +12,7 @@ import {
     PACKAGE_TSCONFIG_FILE,
     PACKAGE_TYPES_DIR, ROOT_DIR,
 } from './Config';
-import { moduleImport, moduleReExport, packagePath } from './lib/Helpers';
+import { moduleImport, moduleReExport, packagePath, packageSrcDir } from './lib/Helpers';
 import { Logger } from './lib/Logger';
 import { meteor } from './plugin/EsbuildPluginMeteor';
 import { PackageCordova, PackageNpm, PackageNamespace, Packages, Scope, NpmDependencies } from './lib/Package';
@@ -169,8 +169,7 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
     }
     
     Object.entries(scopes).forEach(([scope, data]) => {
-        const entryFileDir = Path.join(PACKAGE_ENTRY_DIR, parsedPackage.name);
-        const entryFilePath = Path.join(entryFileDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
+        const entryFilePath = Path.join(parsedPackage.srcDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
         
         const importStrings = data.imports.map((filePath) => moduleReExport({ path: Path.join(PACKAGE_SRC_DIR, parsedPackage.name, filePath) }));
         
@@ -187,7 +186,7 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             path: Path.join(PACKAGE_ENTRY_DIR, 'globals.js'),
         }))
         
-        FS.mkdirSync(entryFileDir, { recursive: true });
+        FS.mkdirSync(parsedPackage.srcDir, { recursive: true });
         FS.writeFileSync(entryFilePath, importStrings.join('\n'));
         
         Logger.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
