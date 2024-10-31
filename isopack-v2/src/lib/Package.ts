@@ -26,8 +26,6 @@ export class PackageNamespace {
     }
     
     public writeEntryModules() {
-        FS.mkdirSync(PACKAGE_TEMP_ENTRY_DIR, { recursive: true });
-        
         for (const [scope, entrypoint] of Object.entries(this.entrypoint)) {
             const filePath = this.entryFilePath(scope);
             const content = [entrypoint?.join('\n') || []];
@@ -36,6 +34,7 @@ export class PackageNamespace {
                 content.push(this.entrypoint.common?.join('\n') || '');
             }
             
+            FS.mkdirSync(Path.dirname(filePath), { recursive: true });
             FS.writeFileSync(filePath, content.join('\n'));
         }
     }
