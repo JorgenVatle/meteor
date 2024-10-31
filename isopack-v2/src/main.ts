@@ -202,12 +202,7 @@ async function prepareGlobalExports() {
     
     function addGlobalScaffolding(packageNames: string[]) {
         const defaults = JSON.stringify(Object.fromEntries(packageNames.map((key) => [key, {}])));
-        const imports: string[] = packageNames.map((name, index) => moduleImport({
-            path: `meteor:package/${name}`,
-            id: `i${index}`,
-        }));
         
-        globalModuleContent.push(...imports);
         globalModuleContent.push(
             `Object.assign(globalThis.Package, ${defaults})`,
         )
