@@ -23,9 +23,10 @@ export function packagePath(name: string) {
  *
  * @param config
  */
-export function moduleImport(config: ModuleImportConfig) {
+export function moduleImport(config: ModuleImportConfig): string {
     let from: string | undefined = config.fromDir;
     let path = config.path;
+    const comments: string[] = [];
     
     if (config.fromFile) {
         from = Path.dirname(config.fromFile);
@@ -36,14 +37,25 @@ export function moduleImport(config: ModuleImportConfig) {
     }
     
     if (PACKAGE_ENTRY_EXT) {
-        path = path.replace(/\.(js|mjs)$/, `.${PACKAGE_ENTRY_EXT}`);
+        const REGEX = /\.(js|mjs)$/;
+        if (path.match(REGEX)) {
+            comments.push(`Original import path: ${path}`);
+        }
+        path = path.replace(REGEX, `.${PACKAGE_ENTRY_EXT}`);
+    }
+    
+    const result = (string: string) => {
+        return [
+            ...comments.map((message) => `// ${message}`),
+            string
+        ].join('\n');
     }
     
     if (config.reExport) {
-        return `export * from ${JSON.stringify(path)};`;
+        return result(`export * from ${JSON.stringify(path)};`);
     }
     
-    return `import ${JSON.stringify(path)};`;
+    return result(`import ${JSON.stringify(path)};`);
 }
 
 export function moduleReExport(config: Omit<ModuleImportConfig, 'reExport'>) {
