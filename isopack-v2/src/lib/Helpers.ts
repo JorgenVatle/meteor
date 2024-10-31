@@ -63,7 +63,7 @@ export function moduleImport(config: ModuleImportConfig): string {
     }
     
     if (id) {
-        result(`import ${id} from ${JSON.stringify(path)}; /* Named import */`);
+        return result(`import ${id} from ${JSON.stringify(path)}; /* Named import */`);
     }
     
     return result(`import ${JSON.stringify(path)}; /* Default import */`);
