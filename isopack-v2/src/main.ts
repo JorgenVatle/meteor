@@ -71,13 +71,13 @@ compilePackages().then(async () => {
         entry: [PACKAGE_ENTRY_DIR],
         
         sourcemap: true,
-        splitting: false,
+        splitting: true,
         cjsInterop: true,
         target: 'node20',
         platform: 'node',
         format: 'esm',
         skipNodeModulesBundle: true,
-        noExternal: ['meteor'],
+        noExternal: [/^meteor\//],
         esbuildPlugins: [
             meteor(),
         ],
