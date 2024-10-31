@@ -187,7 +187,7 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         
         
         data.exports.forEach((id) => {
-            globalExportStrings.push(`globalThis.${id} = ${globalImportStrings.map((_, index) => `g${index}`).join(' || ') || `globalThis.${id}`}`)
+            globalExportStrings.push(`globalThis.${id} = ${globalImportStrings.map((_, index) => `g${index}?.${id}`).join(' || ') || `globalThis.${id}`}`)
             exportStrings.push(`export const ${id} = globalThis.${id}`);
         });
         
