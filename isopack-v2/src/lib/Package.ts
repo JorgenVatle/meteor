@@ -22,6 +22,7 @@ export class PackageNamespace {
         common: [],
         server: [],
     };
+    public readonly entrypointRaw = new ScopedRecord();
     
     public pushToEntrypoint(scope: Scope | string, content: string[]) {
         const entrypoint = this.entrypoint[scope] = this.entrypoint[scope] || [];
@@ -29,9 +30,10 @@ export class PackageNamespace {
     }
     
     public writeEntryModules() {
-        for (const [scope, entrypoint] of Object.entries(this.entrypoint)) {
+        for (const [scope, entrypoint] of Object.entries(this.entrypoint) as [Scope, string[]][]) {
             const filePath = this.entryFilePath(scope);
-            const content = [entrypoint?.join('\n') || []];
+            const content = this.entrypointRaw.get(scope);
+            content.push(entrypoint.join('\n'));
             
             if (scope !== 'common') {
                 content.push(this.entrypoint.common?.join('\n') || '');
@@ -43,7 +45,7 @@ export class PackageNamespace {
             
             this.globalVariables.get(scope as Scope).forEach((id) => {
                 content.push(`export const ${id} = Package[${JSON.stringify(this.name)}].${id}`);
-            })
+            });
             
             FS.mkdirSync(Path.dirname(filePath), { recursive: true });
             FS.writeFileSync(filePath, content.join('\n'));
