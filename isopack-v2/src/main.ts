@@ -197,7 +197,7 @@ async function prepareGlobalExports() {
         moduleImport({
             path: Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime.ts'),
         }),
-        'globalThis.Packages = globalThis.Packages || {}',
+        'globalThis.Package = globalThis.Package || {}',
     ];
     const globalExports = new Map<string, Set<string>>();
     for (const [name, parsedPackage] of Packages) {
@@ -211,7 +211,7 @@ async function prepareGlobalExports() {
             exportsContent.push(`${JSON.stringify(key)}: globalThis.${key}`);
         }
         
-        const globalPackageIdentifier = `globalThis.Packages[${JSON.stringify(parsedPackage.name)}]`;
+        const globalPackageIdentifier = `globalThis.Package[${JSON.stringify(parsedPackage.name)}]`;
         globalModuleContent.push(`${globalPackageIdentifier} = ${globalPackageIdentifier} || {}`);
         globalModuleContent.push(`Object.assign(${globalPackageIdentifier}, { ${exportsContent.join(',\n')} })`);
     }
