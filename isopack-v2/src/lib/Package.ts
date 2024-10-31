@@ -41,6 +41,10 @@ export class PackageNamespace {
                 }))
             }
             
+            this.globalVariables.get(scope as Scope).forEach((id) => {
+                content.push(`export const ${id} = Package[${JSON.stringify(this.name)}].${id}`);
+            })
+            
             FS.mkdirSync(Path.dirname(filePath), { recursive: true });
             FS.writeFileSync(filePath, content.join('\n'));
         }
