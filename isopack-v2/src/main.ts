@@ -216,6 +216,7 @@ async function prepareGlobalExports() {
     for (const [name, parsedPackage] of Packages) {
         const exports = globalExports.get(name) || new Set<string>();
         globalExports.set(parsedPackage.name, exports);
+        parsedPackage.globalVariables.entries.map(([scope, keys]) => keys.forEach((key) => exports.add(key)));
         addExports(name, [...exports]);
     }
     
