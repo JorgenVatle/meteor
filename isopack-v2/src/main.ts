@@ -70,7 +70,7 @@ compilePackages().then(async () => {
         
         sourcemap: true,
         splitting: false,
-        cjsInterop: false,
+        cjsInterop: true,
         target: 'node20',
         platform: 'node',
         format: 'esm',
@@ -171,16 +171,23 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         const entryFilePath = Path.join(entryFileDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
         const globalsFilePath = Path.join(entryFileDir, `${scope}.globals.${PACKAGE_ENTRY_EXT}`);
         
-        const importStrings = data.imports.map((path) => moduleReExport({
-            path: Path.join(PACKAGE_SRC_DIR, parsedPackage.name, path),
-            fromDir: entryFileDir,
-        }));
-        
         const exportStrings: string[] = [];
-        const globalStrings: string[] = [];
+        const globalImportStrings: string[] = [];
+        const globalExportStrings: string[] = [];
+        const importStrings = data.imports.map((path, index) => {
+            globalImportStrings.push(moduleReExport({
+                path: Path.join(PACKAGE_SRC_DIR, parsedPackage.name, path),
+                id: `g${index}`,
+            }))
+            return moduleReExport({
+                path: Path.join(PACKAGE_SRC_DIR, parsedPackage.name, path),
+                fromDir: entryFileDir,
+            })
+        });
+        
         
         data.exports.forEach((id) => {
-            globalStrings.push(`globalThis.${id} = globalThis.${id}`);
+            globalExportStrings.push(`globalThis.${id} = ${globalImportStrings.map((_, index) => `g${index}`).join(' || ') || `globalThis.${id}`}`)
             exportStrings.push(`export const ${id} = globalThis.${id}`);
         });
         
@@ -209,7 +216,7 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             exportStrings.join('\n'),
         ].join('\n'));
         
-        FS.writeFileSync(globalsFilePath, globalStrings.join('\n'));
+        FS.writeFileSync(globalsFilePath, [globalImportStrings, globalExportStrings].flat().join('\n'));
         Logger.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
     });
 }
