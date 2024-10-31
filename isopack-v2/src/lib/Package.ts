@@ -92,7 +92,13 @@ export class PackageNamespace {
         this.impliedPackages.add(packageName);
     }
     
-    public export(name: string, context: ScopeOption = 'common') {
+    public export(name: string, context: ScopeOption | { testOnly: boolean } = 'common') {
+        if (!Array.isArray(context) && typeof context !== 'string') {
+            Logger.warn(`Received scope of wrong type!`, { scope: context });
+            this.globalVariables.add(['common', name]);
+            return;
+        }
+        
         for (const scope of normalizeOptionalArray(context)) {
             this.globalVariables.add([scope, name]);
         }
