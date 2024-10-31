@@ -7,8 +7,10 @@ class Npm {
     }
 }
 
-declare global {
-    const globalThis: Record<string, any>;
+declare namespace globalThis {
+    let Npm: Npm;
+    let require: Npm['require'];
 }
 
 globalThis.Npm = new Npm();
+globalThis.require = globalThis.Npm.require;
