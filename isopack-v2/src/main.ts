@@ -224,6 +224,11 @@ async function prepareGlobalExports() {
         parsedPackage.globalVariables.entries.map(([scope, keys]) => keys.forEach((key) => {
             exports.add(key);
             global.add(key);
+            
+            if (key.includes('Hook')) {
+                globalModuleContent.push('globalThis.Hook = console.log(globalThis.Hook) || class {}');
+                globalModuleContent.push(`setTimeout(() => console.log(globalThis.Hook), 1)`);
+            }
         }));
         addExports(name, [...exports]);
     }
