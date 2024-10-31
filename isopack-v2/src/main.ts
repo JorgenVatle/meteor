@@ -169,28 +169,10 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
     Object.entries(scopes).forEach(([scope, data]) => {
         const entryFileDir = Path.join(PACKAGE_ENTRY_DIR, parsedPackage.name);
         const entryFilePath = Path.join(entryFileDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
-        const globalsFilePath = Path.join(entryFileDir, `${scope}.globals.${PACKAGE_ENTRY_EXT}`);
         
-        const moduleId = (index: number) => `g${index}`;
-        
-        const exportStrings: string[] = [];
-        const globalImportStrings: string[] = [];
-        const globalExportStrings: string[] = [];
-        const importStrings = data.imports.map((filePath, index) => {
-            const path = Path.join(PACKAGE_SRC_DIR, parsedPackage.name, filePath);
-            return [
-                moduleImport({ path, id: moduleId(index) }),
-                moduleReExport({ path }),
-            ]
-        }).flat();
+        const importStrings = data.imports.map((filePath) => moduleReExport({ path: Path.join(PACKAGE_SRC_DIR, parsedPackage.name, filePath) }));
         
         Logger.debug({ [`${parsedPackage.name}.${scope}`]: importStrings })
-        
-        
-        data.exports.forEach((id) => {
-            globalExportStrings.push(`globalThis.${id} = ${globalImportStrings.map((_, index) => `g${index}?.${id}`).join(' || ') || `globalThis.${id}`}`)
-            exportStrings.push(`export const ${id} = globalThis.${id}`);
-        });
         
         if (scope !== 'common') {
             importStrings.unshift(moduleReExport({
@@ -199,25 +181,9 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             }));
         }
         
-        importStrings.unshift(moduleImport({
-            path: Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime.ts'),
-            fromDir: entryFileDir,
-            normalizeFileExtension: PACKAGE_ENTRY_EXT,
-        }));
-        
-        importStrings.unshift(moduleImport({
-            path: globalsFilePath,
-            fromDir: entryFileDir,
-            normalizeFileExtension: PACKAGE_ENTRY_EXT,
-        }));
-        
         FS.mkdirSync(entryFileDir, { recursive: true });
-        FS.writeFileSync(entryFilePath, [
-            importStrings.join('\n'),
-            exportStrings.join('\n'),
-        ].join('\n'));
+        FS.writeFileSync(entryFilePath, importStrings.join('\n'));
         
-        FS.writeFileSync(globalsFilePath, [globalImportStrings, globalExportStrings].flat().join('\n'));
         Logger.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
     });
 }
