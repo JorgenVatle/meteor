@@ -44,8 +44,8 @@ export function esmImportString(config: {
     }
     
     if (config.reExport) {
-        return `export * from ${JSON.stringify(path)}`;
+        return `export * from ${JSON.stringify(path)};`;
     }
     
-    return `import ${JSON.stringify(path)}`;
+    return `import ${JSON.stringify(path)};`;
 }
