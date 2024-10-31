@@ -194,4 +194,8 @@ class ScopedRecord<TValue = string> {
     public add(scope: Scope, value: TValue) {
         this.get(scope).push(value);
     }
+    
+    public get entries() {
+        return Object.entries(this.data) as [keyof EntrypointRecord, TValue][];
+    }
 }
