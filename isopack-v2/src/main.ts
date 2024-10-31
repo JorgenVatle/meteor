@@ -167,8 +167,8 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
     
     Object.entries(scopes).forEach(([scope, data]) => {
         const entryFileDir = Path.join(PACKAGE_ENTRY_DIR, parsedPackage.name);
-        const entryFilePath = Path.join(entryFileDir, `${scope}.js`);
-        const globalsFilePath = Path.join(entryFileDir, `${scope}.globals.js`);
+        const entryFilePath = Path.join(entryFileDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
+        const globalsFilePath = Path.join(entryFileDir, `${scope}.globals.${PACKAGE_ENTRY_EXT}`);
         
         const importStrings = data.imports.map((path) => moduleReExport({
             path: Path.join(PACKAGE_SRC_DIR, parsedPackage.name, path),
