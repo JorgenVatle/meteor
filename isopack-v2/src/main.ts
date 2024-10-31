@@ -169,12 +169,11 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         const entryFilePath = Path.join(entryFileDir, `${scope}.js`);
         const globalsFilePath = Path.join(entryFileDir, `${scope}.globals.js`);
         const packageDir = Path.join(process.cwd(), '..', 'packages', parsedPackage.name);
-        const importStrings = data.imports.map((path) => {
-            const absolutePath = Path.join(packageDir, path);
-            const relativePath = Path.relative(entryFileDir, absolutePath)
-            
-            return `export * from ${JSON.stringify(relativePath)}`;
-        });
+        
+        const importStrings = data.imports.map((path) => moduleReExport({
+            path: Path.join(packageDir, path),
+            fromDir: entryFileDir,
+        }));
         
         const exportStrings: string[] = [];
         const globalStrings: string[] = [];
