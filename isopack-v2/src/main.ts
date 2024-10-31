@@ -226,8 +226,9 @@ async function prepareGlobalExports() {
             global.add(key);
         }));
         addExports(name, [...exports]);
-        addGlobal([...global]);
     }
+    
+    addGlobal([...global]);
     
     Object.entries(placeholderContext).forEach(([key, value]) => {
         globalModuleContent.push(`globalThis.${key} = globalThis.${key} || ${JSON.stringify(value)}`);
