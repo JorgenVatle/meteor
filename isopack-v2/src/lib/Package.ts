@@ -1,4 +1,5 @@
 import Path from 'node:path';
+import { PACKAGE_ENTRY_DIR } from '../Config';
 import { normalizeOptionalArray, packagePath } from './Helpers';
 import { Logger } from './Logger';
 
@@ -15,6 +16,10 @@ export class PackageNamespace {
     
     public get srcDir() {
         return Path.dirname(packagePath(this.name));
+    }
+    
+    public get entryDir() {
+        return Path.join(PACKAGE_ENTRY_DIR, this.name);
     }
     
     // Defined in package.js with api.export()
