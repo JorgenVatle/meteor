@@ -17,7 +17,10 @@ import {
 import { moduleImport, packagePath } from './lib/Helpers';
 import { Logger } from './lib/Logger';
 import { NpmDependencies, PackageCordova, PackageNamespace, PackageNpm, Packages, Scope } from './lib/Package';
-import { meteor } from './plugin/EsbuildPluginMeteor';
+
+const memoryModules = {
+    meteorRuntime: '',
+}
 
 async function parse(packageName: string) {
     if (Packages.has(packageName)) {
@@ -84,7 +87,7 @@ compilePackages().then(async () => {
             {
                 name: 'meteor:packages',
                 setup(build) {
-                    build.onResolve({ filter: /^meteor\// }, (args) => {
+                    build.onResolve({ filter: /^(meteor\/|meteor:runtime)/ }, (args) => {
                         const [_, packageName, ...path] = args.path.split('/');
                         const result = {
                             path: packageName,
@@ -95,9 +98,19 @@ compilePackages().then(async () => {
                             result.path = Path.join(PACKAGE_SRC_DIR, packageName, path.join('/').replace(/\.(js|mjs)$/, '') + '.js')
                             result.namespace = 'file';
                         }
+                        if (args.path.includes('meteor:runtime')) {
+                            result.namespace = 'meteor:runtime';
+                        }
                         console.log(result);
                         return result;
                     });
+                    build.onLoad({ filter: /.*/, namespace: 'meteor:runtime' }, (args) => {
+                        return {
+                            contents: memoryModules.meteorRuntime,
+                            loader: 'js',
+                            resolveDir: PACKAGE_DIST_DIR,
+                        }
+                    })
                     build.onLoad({ filter: /.*/, namespace: 'meteor:package' }, (args) => {
                         const [name, ...path] = args.path.split('/');
                         const parsedPackage = Packages.get(name);
@@ -200,7 +213,9 @@ async function prepareGlobalExports() {
         })
     }
     
-    FS.writeFileSync(PACKAGE_RUNTIME_ENVIRONMENT, globalModuleContent.join('\n'));
+    memoryModules.meteorRuntime = globalModuleContent.join('\n');
+    
+    FS.writeFileSync(PACKAGE_RUNTIME_ENVIRONMENT, memoryModules.meteorRuntime);
 }
 
 function installNpmDependencies() {
