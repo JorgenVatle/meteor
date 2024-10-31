@@ -32,6 +32,11 @@ export class PackageNamespace {
             
             if (scope !== 'common') {
                 content.push(this.entrypoint.common?.join('\n') || '');
+            } else {
+                content.unshift(moduleImport({
+                    path: Path.join(PACKAGE_ENTRY_DIR, 'globals.js'),
+                    normalizeFileExtension: PACKAGE_ENTRY_EXT,
+                }))
             }
             
             FS.mkdirSync(Path.dirname(filePath), { recursive: true });
