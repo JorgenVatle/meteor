@@ -12,6 +12,17 @@ export function packagePath(name: string) {
     return Path.join(process.cwd(), '..', 'packages', name, 'package.js');
 }
 
+
+/**
+ * @example
+ * esmImportString({ path: 'foo' })
+ *  // -> import "foo"
+ *
+ * esmImportString({ path: '/home/node/foo.js', fromDir: '/root' })
+ * // -> import "../home/node/foo.js"
+ *
+ * @param config
+ */
 export function esmImportString(config: {
     /**
      * Path to the module to import. Can be absolute or relative.
