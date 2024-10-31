@@ -36,12 +36,12 @@ export function moduleImport(config: ModuleImportConfig): string {
         path = './' + Path.relative(from, path);
     }
     
-    if (PACKAGE_ENTRY_EXT) {
+    if (config.fileExtension) {
         const REGEX = /\.(js|mjs)$/;
         if (path.match(REGEX)) {
             comments.push(`Original import path: ${path}`);
         }
-        path = path.replace(REGEX, `.${PACKAGE_ENTRY_EXT}`);
+        path = path.replace(REGEX, `.${config.fileExtension}`);
     }
     
     const result = (string: string) => {
@@ -85,4 +85,9 @@ interface ModuleImportConfig {
      * Whether to re-export everything exported by the provided module.
      */
     reExport?: boolean;
+    
+    /**
+     * Normalize file extension, replacing original .js/.mjs extensions with the one provided here.
+     */
+    fileExtension?: 'js' | 'mjs';
 }
