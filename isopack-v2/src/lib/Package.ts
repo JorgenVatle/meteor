@@ -14,6 +14,8 @@ export class PackageNamespace {
     public readonly impliedPackages = new Set<string>();
     public readonly modules = new Set<ScopedReference>();
     public readonly types = new Set<string>();
+    // Defined in package.js with api.export()
+    public readonly globalVariables = new ScopedRecord();
     public readonly entrypoint: Partial<EntrypointRecord> = {
         client: [],
         common: [],
@@ -54,9 +56,6 @@ export class PackageNamespace {
     public entryFilePath(scope: Scope | string) {
         return Path.join(this.entryDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
     }
-    
-    // Defined in package.js with api.export()
-    public readonly globalVariables = new Set<ScopedReference>();
     
     constructor(public readonly name: string) {
         Packages.set(name, this);
@@ -123,14 +122,14 @@ export class PackageNamespace {
         if (!Array.isArray(context) && typeof context !== 'string') {
             Logger.warn(`Received scope of wrong type!`, { scope: context });
             for (const exportName of normalizeOptionalArray(name)) {
-                this.globalVariables.add(['common', exportName]);
+                this.globalVariables.add('common', exportName);
             }
             return;
         }
         
         for (const scope of normalizeOptionalArray(context)) {
             for (const exportName of normalizeOptionalArray(name)) {
-                this.globalVariables.add([scope, exportName]);
+                this.globalVariables.add(scope, exportName);
             }
         }
     }
