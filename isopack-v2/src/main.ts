@@ -10,7 +10,7 @@ import {
     PACKAGE_TSCONFIG_FILE,
     TYPES_DIST_DIR,
 } from './Config';
-import { packagePath } from './lib/Helpers';
+import { esmImportString, packagePath } from './lib/Helpers';
 import { Logger } from './lib/Logger';
 import { meteor } from './plugin/EsbuildPluginMeteor';
 import { PackageCordova, PackageNpm, PackageNamespace, Packages, Scope, NpmDependencies } from './lib/Package';
@@ -188,8 +188,15 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             importStrings.unshift(`export * from ${JSON.stringify('./common')}`);
         }
         
-        importStrings.unshift(`import ${JSON.stringify(Path.relative(entryFileDir, Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime')))}`);
-        importStrings.unshift(`import ${JSON.stringify('./' + Path.relative(entryFileDir, globalsFilePath))}`);
+        importStrings.unshift(esmImportString({
+            path: Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime'),
+            fromDir: entryFileDir
+        }));
+        
+        importStrings.unshift(esmImportString({
+            path: globalsFilePath,
+            fromDir: entryFileDir,
+        }));
         
         FS.mkdirSync(entryFileDir, { recursive: true });
         FS.writeFileSync(entryFilePath, [
