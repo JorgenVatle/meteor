@@ -192,7 +192,11 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
 
 async function prepareGlobalExports() {
     let count = 0;
-    const globalModuleContent: string[] = [];
+    const globalModuleContent: string[] = [
+        moduleImport({
+            path: Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime.ts'),
+        })
+    ];
     for (const [name, parsedPackage] of Packages) {
         const scopes: Partial<Record<Scope, string[]>> = {};
         for (const [scope, id] of parsedPackage.globalVariables) {
