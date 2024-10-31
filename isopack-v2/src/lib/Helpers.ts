@@ -23,7 +23,7 @@ export function packagePath(name: string) {
  *
  * @param config
  */
-export function esmImportString(config: {
+export function moduleImport(config: {
     /**
      * Path to the module to import. Can be absolute or relative.
      */
