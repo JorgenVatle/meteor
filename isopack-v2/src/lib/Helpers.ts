@@ -40,7 +40,7 @@ export function esmImportString(config: {
     }
     
     if (from) {
-        path = Path.relative(from, path);
+        path = './' + Path.relative(from, path);
     }
     
     if (config.reExport) {
