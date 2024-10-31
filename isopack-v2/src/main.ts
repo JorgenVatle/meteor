@@ -6,7 +6,7 @@ import {
     BUNDLE_ASSETS_DIR,
     DEBUG, NPM_MASTER_MODULE,
     PACKAGE_DIST_DIR,
-    PACKAGE_ENTRY_DIR,
+    PACKAGE_ENTRY_DIR, PACKAGE_SRC_DIR,
     PACKAGE_TSCONFIG_FILE,
     PACKAGE_TYPES_DIR,
 } from './Config';
@@ -168,10 +168,9 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         const entryFileDir = Path.join(PACKAGE_ENTRY_DIR, parsedPackage.name);
         const entryFilePath = Path.join(entryFileDir, `${scope}.js`);
         const globalsFilePath = Path.join(entryFileDir, `${scope}.globals.js`);
-        const packageDir = Path.join(process.cwd(), '..', 'packages', parsedPackage.name);
         
         const importStrings = data.imports.map((path) => moduleReExport({
-            path: Path.join(packageDir, path),
+            path: Path.join(PACKAGE_SRC_DIR, parsedPackage.name, path),
             fromDir: entryFileDir,
         }));
         
