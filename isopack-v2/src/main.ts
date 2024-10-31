@@ -199,12 +199,19 @@ async function prepareGlobalExports() {
         }),
         'globalThis.Package = globalThis.Package || {}',
     ];
+    const placeholderContext: Record<string, any> = {
+        meteorEnv: null,
+        Package: {},
+    };
     const globalExports = new Map<string, Set<string>>();
     for (const [name, parsedPackage] of Packages) {
         const exports = globalExports.get(name) || new Set<string>();
         globalExports.set(parsedPackage.name, exports);
         for (const [scope, ids] of parsedPackage.globalVariables.entries) {
-            ids.forEach((id) => exports.add(id));
+            ids.forEach((id) => {
+                exports.add(id);
+                Object.assign(placeholderContext, { [id]: null })
+            });
         }
         const exportsContent = []
         for (const key of exports) {
@@ -215,6 +222,8 @@ async function prepareGlobalExports() {
         globalModuleContent.push(`${globalPackageIdentifier} = ${globalPackageIdentifier} || {}`);
         globalModuleContent.push(`Object.assign(${globalPackageIdentifier}, { ${exportsContent.join(',\n')} })`);
     }
+    
+    globalModuleContent.unshift(`Object.assign(globalThis, ${JSON.stringify(placeholderContext)}, globalThis)`);
     
     memoryModules.meteorRuntime = globalModuleContent.join('\n');
     
