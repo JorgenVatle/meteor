@@ -23,7 +23,33 @@ export function packagePath(name: string) {
  *
  * @param config
  */
-export function moduleImport(config: {
+export function moduleImport(config: ModuleImportConfig) {
+    let from: string | undefined = config.fromDir;
+    let path = config.path;
+    
+    if (config.fromFile) {
+        from = Path.dirname(config.fromFile);
+    }
+    
+    if (from) {
+        path = './' + Path.relative(from, path);
+    }
+    
+    if (config.reExport) {
+        return `export * from ${JSON.stringify(path)};`;
+    }
+    
+    return `import ${JSON.stringify(path)};`;
+}
+
+export function moduleReExport(config: Omit<ModuleImportConfig, 'reExport'>) {
+    return moduleImport({
+        ...config,
+        reExport: true,
+    })
+}
+
+interface ModuleImportConfig {
     /**
      * Path to the module to import. Can be absolute or relative.
      */
@@ -42,21 +68,4 @@ export function moduleImport(config: {
      * Whether to re-export everything exported by the provided module.
      */
     reExport?: boolean;
-}) {
-    let from: string | undefined = config.fromDir;
-    let path = config.path;
-    
-    if (config.fromFile) {
-        from = Path.dirname(config.fromFile);
-    }
-    
-    if (from) {
-        path = './' + Path.relative(from, path);
-    }
-    
-    if (config.reExport) {
-        return `export * from ${JSON.stringify(path)};`;
-    }
-    
-    return `import ${JSON.stringify(path)};`;
 }
