@@ -40,7 +40,7 @@ export class PackageNamespace {
             } else {
                 content.unshift(moduleImport({
                     path: PACKAGE_RUNTIME_ENVIRONMENT,
-                }))
+                }));
             }
             
             this.globalVariables.get(scope as Scope).forEach((id) => {
@@ -48,7 +48,7 @@ export class PackageNamespace {
             });
             
             FS.mkdirSync(Path.dirname(filePath), { recursive: true });
-            FS.writeFileSync(filePath, content.join('\n'));
+            FS.writeFileSync(filePath, content.flat().join('\n'));
         }
     }
     
