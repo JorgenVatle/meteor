@@ -223,7 +223,7 @@ async function prepareGlobalExports() {
         globalModuleContent.push(`Object.assign(${globalPackageIdentifier}, { ${exportsContent.join(',\n')} })`);
     }
     
-    globalModuleContent.unshift(`Object.assign(globalThis, ${JSON.stringify(placeholderContext)}, globalThis)`);
+    globalModuleContent.unshift(`Object.assign(globalThis, ${JSON.stringify(placeholderContext, null, 2)}, globalThis)`);
     
     memoryModules.meteorRuntime = globalModuleContent.join('\n');
     
