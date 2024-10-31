@@ -9,7 +9,7 @@ import {
     PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT,
     PACKAGE_SRC_DIR,
     PACKAGE_TSCONFIG_FILE,
-    PACKAGE_TYPES_DIR,
+    PACKAGE_TYPES_DIR, ROOT_DIR,
 } from './Config';
 import { moduleImport, moduleReExport, packagePath } from './lib/Helpers';
 import { Logger } from './lib/Logger';
@@ -83,7 +83,7 @@ compilePackages().then(async () => {
         tsconfig: PACKAGE_TSCONFIG_FILE,
     })
     
-    Logger.log('Remember to install npm dependencies:\n', [...NpmDependencies.keys()].join(' '));
+    notifyMissingNpmDependencies();
 }).catch((error) => {
     Logger.error(error);
     process.exit(1);
@@ -211,6 +211,26 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         FS.writeFileSync(globalsFilePath, globalStrings.join('\n'));
         Logger.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
     });
+}
+
+function notifyMissingNpmDependencies() {
+    const lockfile = FS.readFileSync(Path.join(ROOT_DIR, 'package-lock.json'), 'utf8');
+    const missingDependencies: string[] = [];
+    
+    for (const name of NpmDependencies.keys()) {
+        if (lockfile.includes(JSON.stringify(name))) {
+            continue;
+        }
+        missingDependencies.push(name);
+    }
+    
+    if (!missingDependencies.length) {
+        return;
+    }
+    
+    Logger.warn('You are missing some npm dependencies required by Meteor');
+    Logger.warn('Use the following command to add them to your project');
+    Logger.warn(` L npm i ${missingDependencies.join(' ')}`)
 }
 
 declare const globalThis: {
