@@ -22,6 +22,6 @@ export class ScopedRecord<TValue = string> {
     }
     
     public get entries() {
-        return Object.entries(this.data) as [keyof EntrypointRecord, TValue][];
+        return Object.entries(this.data) as [key: keyof EntrypointRecord, value: TValue[]][];
     }
 }
