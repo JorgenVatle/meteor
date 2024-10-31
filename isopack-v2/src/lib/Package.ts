@@ -50,6 +50,7 @@ export class PackageNamespace {
                     content.push('console.log(this)');
                     return;
                 }
+                content.push(`Object.assign(globalThis.Package[${JSON.stringify(this.name)}], { ${JSON.stringify(id)}: ${id} })`);
                 content.push(`export const ${id} = globalThis.Package[${JSON.stringify(this.name)}].${id}`);
             });
             
