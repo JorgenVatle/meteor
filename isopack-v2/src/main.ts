@@ -1,12 +1,13 @@
 import * as FS from 'node:fs';
 import * as Path from 'node:path';
 import * as process from 'node:process';
+import { spawnSync } from 'node:child_process';
 import { build } from 'tsup';
 import {
     BUNDLE_ASSETS_DIR,
     DEBUG, NPM_MASTER_MODULE,
     PACKAGE_DIST_DIR,
-    PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT,
+    PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT, PACKAGE_NPM_DIR,
     PACKAGE_SRC_DIR,
     PACKAGE_TSCONFIG_FILE,
     PACKAGE_TYPES_DIR, ROOT_DIR,
@@ -83,7 +84,7 @@ compilePackages().then(async () => {
         tsconfig: PACKAGE_TSCONFIG_FILE,
     })
     
-    notifyMissingNpmDependencies();
+    installNpmDependencies();
 }).catch((error) => {
     Logger.error(error);
     process.exit(1);
@@ -213,8 +214,15 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
     });
 }
 
-function notifyMissingNpmDependencies() {
-    const lockfile = FS.readFileSync(Path.join(ROOT_DIR, 'package-lock.json'), 'utf8');
+function installNpmDependencies() {
+    const lockfilePath = Path.join(PACKAGE_NPM_DIR, 'package-lock.json');
+    FS.mkdirSync(Path.dirname(lockfilePath), { recursive: true });
+    let lockfile = '';
+    
+    if (FS.existsSync(lockfilePath)) {
+        lockfile = FS.readFileSync(Path.join(ROOT_DIR, 'package-lock.json'), 'utf8');
+    }
+    
     const missingDependencies: string[] = [];
     
     for (const name of NpmDependencies.keys()) {
@@ -229,8 +237,26 @@ function notifyMissingNpmDependencies() {
     }
     
     Logger.warn('You are missing some npm dependencies required by Meteor');
-    Logger.warn('Use the following command to add them to your project');
-    Logger.warn(` L npm i ${missingDependencies.join(' ')}`)
+    Logger.warn('We are now installing these dependencies for you. This might take a minute or two...');
+    Logger.warn(missingDependencies.map((name) => ` | ${name}`).join('\n'));
+    
+    const { error, stderr, stdout } = spawnSync(`npm`, ['i', ...missingDependencies], {
+        cwd: PACKAGE_NPM_DIR,
+        stdio: ['inherit', 'inherit', 'inherit', 'inherit'],
+    });
+    
+    if (stdout) {
+        Logger.info(stdout);
+    }
+    
+    if (stderr) {
+        Logger.error(stderr);
+    }
+    
+    if (error) {
+        throw error;
+    }
+    
 }
 
 declare const globalThis: {
