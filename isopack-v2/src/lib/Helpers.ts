@@ -8,14 +8,16 @@ export function normalizeOptionalArray<TType extends string>(input: TType | TTyp
     return [input];
 }
 
-export function packagePath(name: string) {
-    let srcDir = PACKAGE_SRC_DIR;
-    
+export function packageSrcDir(name: string) {
     if (['mongo-decimal'].includes(name)) {
-        srcDir = PACKAGE_SRC_DIR_NON_CORE;
+        return Path.join(PACKAGE_SRC_DIR_NON_CORE, name);
     }
     
-    return Path.join(srcDir, name, 'package.js');
+    return Path.join(PACKAGE_SRC_DIR, name);
+}
+
+export function packagePath(name: string) {
+    return Path.join(packageSrcDir(name), 'package.js');
 }
 
 
