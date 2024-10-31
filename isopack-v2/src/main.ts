@@ -89,7 +89,7 @@ compilePackages().then(async () => {
             {
                 name: 'meteor:packages',
                 setup(build) {
-                    build.onResolve({ filter: /^(meteor\/|meteor:runtime)/ }, (args) => {
+                    build.onResolve({ filter: /^(meteor\/|meteor:\w+)/ }, (args) => {
                         const [_, packageName, ...path] = args.path.split('/');
                         const result = {
                             path: packageName,
@@ -110,12 +110,23 @@ compilePackages().then(async () => {
                     build.onLoad({ filter: /.*/, namespace: 'meteor:package' }, (args) => {
                         const [name, ...path] = args.path.split('/');
                         const parsedPackage = Packages.get(name);
-                        const contents = parsedPackage?.entrypointRaw.get('server').join('\n');
+                        if (args.path.includes('\0')) {
+                            return {
+                                contents: parsedPackage?.entrypointRaw.get('server') || '',
+                            };
+                        }
+                        const contents = [
+                            memoryModules.meteorRuntime,
+                            parsedPackage?.entrypointRaw.get('server'),
+                            `import * as s1 from 'meteor:package/${args.path}\0'`,
+                            `globalThis.Package[${JSON.stringify(name)}] = s1`,
+                        ].flat().join('\n');
                         if (!contents) {
                             console.warn(`Failed to get contents for ${parsedPackage?.name}`);
                         }
+                        
                         return {
-                            contents: [memoryModules.meteorRuntime, contents].join('\n'),
+                            contents,
                             loader: 'js',
                             resolveDir: parsedPackage?.entryDir,
                         }
@@ -202,7 +213,12 @@ async function prepareGlobalExports() {
     
     function addGlobalScaffolding(packageNames: string[]) {
         const defaults = JSON.stringify(Object.fromEntries(packageNames.map((key) => [key, {}])));
+        const imports: string[] = packageNames.map((name, index) => moduleImport({
+            path: Path.join(PACKAGE_ENTRY_DIR, name, 'server.mjs'),
+            id: `i${index}`,
+        }));
         
+        // globalModuleContent.push(...imports);
         globalModuleContent.push(
             `Object.assign(globalThis.Package, ${defaults})`,
         )
