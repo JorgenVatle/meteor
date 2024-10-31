@@ -68,6 +68,7 @@ compilePackages().then(async () => {
     
     await prepareEntryModules();
     await prepareGlobalExports();
+    console.dir(Packages.get('ddp-common'), { colors: true, depth: 3 });
     
     await build({
         name: 'built-packages',
@@ -76,7 +77,7 @@ compilePackages().then(async () => {
         entry: [PACKAGE_ENTRY_DIR],
         
         sourcemap: true,
-        splitting: false,
+        splitting: true,
         cjsInterop: true,
         target: 'node20',
         platform: 'node',
@@ -92,6 +93,7 @@ compilePackages().then(async () => {
                         const result = {
                             path: packageName,
                             namespace: 'meteor:package',
+                            sideEffects: true,
                         }
                         // Skip virtual module when accessing Meteor package assets directly.
                         if (path.length) {
@@ -104,13 +106,6 @@ compilePackages().then(async () => {
                         console.log(result);
                         return result;
                     });
-                    build.onLoad({ filter: /.*/, namespace: 'meteor:runtime' }, (args) => {
-                        return {
-                            contents: memoryModules.meteorRuntime,
-                            loader: 'js',
-                            resolveDir: PACKAGE_DIST_DIR,
-                        }
-                    })
                     build.onLoad({ filter: /.*/, namespace: 'meteor:package' }, (args) => {
                         const [name, ...path] = args.path.split('/');
                         const parsedPackage = Packages.get(name);
