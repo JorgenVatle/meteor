@@ -215,7 +215,7 @@ async function prepareGlobalExports() {
         }
         const exportsContent = []
         for (const key of exports) {
-            exportsContent.push(`${JSON.stringify(key)}: globalThis.${key}`);
+            exportsContent.push(`${JSON.stringify(key)}: globalThis.${key} || globalThis.Package?.[${JSON.stringify(name)}]?.${key}`);
         }
         
         const globalPackageIdentifier = `globalThis.Package[${JSON.stringify(parsedPackage.name)}]`;
