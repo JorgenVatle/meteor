@@ -62,6 +62,8 @@ compilePackages().then(async () => {
         await copyTypeDefinitions(parsedPackage);
     }
     
+    await prepareGlobalExports();
+    
     await build({
         name: 'built-packages',
         outDir: PACKAGE_DIST_DIR,
@@ -186,6 +188,35 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         
         Logger.debug(`Created entry file: ${Path.relative(process.cwd(), entryFilePath)}`);
     });
+}
+
+async function prepareGlobalExports() {
+    let count = 0;
+    const globalModuleContent: string[] = [];
+    for (const [name, parsedPackage] of Packages) {
+        const scopes: Partial<Record<Scope, string[]>> = {};
+        for (const [scope, id] of parsedPackage.globalVariables) {
+            const content = scopes[scope] = scopes[scope] || [];
+            const importId = `m${count++}`;
+            
+            content.push(moduleImport({
+                path: Path.join(PACKAGE_ENTRY_DIR, parsedPackage.name, `${scope}.${PACKAGE_ENTRY_EXT}`),
+                id: importId,
+            }));
+            
+            content.push(`globalThis.${id} = ${importId}['${id}']`);
+        }
+        const entries = Object.entries(scopes);
+        if (!entries.length) {
+            continue;
+        }
+        globalModuleContent.push(`// ${name}`)
+        entries.forEach(([scope, content]) => {
+            globalModuleContent.push(content.join('\n'));
+        });
+    }
+    
+    FS.writeFileSync(Path.join(PACKAGE_ENTRY_DIR, 'globals.js'), globalModuleContent.join('\n'));
 }
 
 function installNpmDependencies() {
