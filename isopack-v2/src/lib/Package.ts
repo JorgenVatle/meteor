@@ -51,6 +51,7 @@ export class PackageNamespace {
                     return;
                 }
                 content.push(`export const ${id} = globalThis.Package[${JSON.stringify(this.name)}].${id}`);
+                content.unshift(`globalThis.Package = globalThis.Package || {}`);
             });
             
             FS.mkdirSync(Path.dirname(filePath), { recursive: true });
