@@ -171,19 +171,20 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         const entryFilePath = Path.join(entryFileDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
         const globalsFilePath = Path.join(entryFileDir, `${scope}.globals.${PACKAGE_ENTRY_EXT}`);
         
+        const moduleId = (index: number) => `g${index}`;
+        
         const exportStrings: string[] = [];
         const globalImportStrings: string[] = [];
         const globalExportStrings: string[] = [];
-        const importStrings = data.imports.map((path, index) => {
-            globalImportStrings.push(moduleReExport({
-                path: Path.join(PACKAGE_SRC_DIR, parsedPackage.name, path),
-                id: `g${index}`,
-            }))
-            return moduleReExport({
-                path: Path.join(PACKAGE_SRC_DIR, parsedPackage.name, path),
-                fromDir: entryFileDir,
-            })
-        });
+        const importStrings = data.imports.map((filePath, index) => {
+            const path = Path.join(PACKAGE_SRC_DIR, parsedPackage.name, filePath);
+            return [
+                moduleImport({ path, id: moduleId(index) }),
+                moduleReExport({ path }),
+            ]
+        }).flat();
+        
+        Logger.debug({ [`${parsedPackage.name}.${scope}`]: importStrings })
         
         
         data.exports.forEach((id) => {
