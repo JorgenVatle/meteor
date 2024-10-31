@@ -6,7 +6,7 @@ import {
     BUNDLE_ASSETS_DIR,
     DEBUG, NPM_MASTER_MODULE,
     PACKAGE_DIST_DIR,
-    PACKAGE_ENTRY_DIR,
+    PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT,
     PACKAGE_SRC_DIR,
     PACKAGE_TSCONFIG_FILE,
     PACKAGE_TYPES_DIR,
@@ -185,18 +185,21 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         
         if (scope !== 'common') {
             importStrings.unshift(moduleReExport({
-                path: `./common.js`
+                path: `./common.js`,
+                normalizeFileExtension: PACKAGE_ENTRY_EXT,
             }));
         }
         
         importStrings.unshift(moduleImport({
             path: Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime.ts'),
-            fromDir: entryFileDir
+            fromDir: entryFileDir,
+            normalizeFileExtension: PACKAGE_ENTRY_EXT,
         }));
         
         importStrings.unshift(moduleImport({
             path: globalsFilePath,
             fromDir: entryFileDir,
+            normalizeFileExtension: PACKAGE_ENTRY_EXT,
         }));
         
         FS.mkdirSync(entryFileDir, { recursive: true });
