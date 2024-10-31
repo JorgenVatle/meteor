@@ -204,7 +204,7 @@ async function prepareGlobalExports() {
     function addExports(packageName: string, exports: string[]) {
         const packageIdentifier = `globalThis.Package[${JSON.stringify(packageName)}]`;
         const exportLines = exports.map((id) => `${JSON.stringify(id)}: globalThis.${id}`);
-        const exportMap = ['{', ...exportLines, '}'].join('\n')
+        const exportMap = ['{', exportLines.join(',\n'), '}'].join('\n')
         globalModuleContent.push(`Object.assign(${packageIdentifier}, ${exportMap})`)
     }
     
