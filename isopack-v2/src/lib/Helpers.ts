@@ -27,13 +27,14 @@ export function moduleImport(config: ModuleImportConfig): string {
     let from: string | undefined = config.fromDir;
     let path = config.path;
     const comments: string[] = [];
+    let reExportId = '*';
     
     if (config.fromFile) {
         from = Path.dirname(config.fromFile);
     }
     
     if (from) {
-        path = './' + Path.relative(from, path);
+        path = Path.resolve(from, path);
     }
     
     if (config.normalizeFileExtension) {
@@ -51,8 +52,12 @@ export function moduleImport(config: ModuleImportConfig): string {
         ].join('\n');
     }
     
+    if (config.id) {
+        reExportId = `* as ${config.id}`;
+    }
+    
     if (config.reExport) {
-        return result(`export * from ${JSON.stringify(path)};`);
+        return result(`export ${reExportId} from ${JSON.stringify(path)};`);
     }
     
     return result(`import ${JSON.stringify(path)};`);
@@ -90,4 +95,6 @@ interface ModuleImportConfig {
      * Normalize file extension, replacing original .js/.mjs extensions with the one provided here.
      */
     normalizeFileExtension?: 'js' | 'mjs';
+    
+    id?: string;
 }
