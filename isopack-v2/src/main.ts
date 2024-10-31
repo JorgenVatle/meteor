@@ -198,7 +198,7 @@ async function prepareGlobalExports() {
             path: Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime.ts'),
         }),
         'globalThis.Package = globalThis.Package || {}',
-        `Object.Assign(globalThis.Package, ${JSON.stringify(Object.fromEntries([...Packages.keys()].map((key) => [key, {}])))})`
+        `Object.assign(globalThis.Package, ${JSON.stringify(Object.fromEntries([...Packages.keys()].map((key) => [key, {}])))})`
     ];
     
     const placeholderContext: Record<string, any> = {
