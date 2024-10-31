@@ -89,10 +89,10 @@ compilePackages().then(async () => {
             {
                 name: 'meteor:packages',
                 setup(build) {
-                    build.onResolve({ filter: /^(meteor\/|meteor:)/ }, (args) => {
-                        const [_, scope, packageName, ...path] = args.path.split('/');
+                    build.onResolve({ filter: /^(meteor\/|meteor:runtime)/ }, (args) => {
+                        const [_, packageName, ...path] = args.path.split('/');
                         const result = {
-                            path: [scope, packageName, ...path].join('/'),
+                            path: packageName,
                             namespace: 'meteor:package',
                             sideEffects: true,
                         }
@@ -108,9 +108,9 @@ compilePackages().then(async () => {
                         return result;
                     });
                     build.onLoad({ filter: /.*/, namespace: 'meteor:package' }, (args) => {
-                        const [scope, name, ...path] = args.path.split('/');
+                        const [name, ...path] = args.path.split('/');
                         const parsedPackage = Packages.get(name);
-                        const contents = parsedPackage?.entrypointRaw.get(scope as Scope).join('\n');
+                        const contents = parsedPackage?.entrypointRaw.get('server').join('\n');
                         if (!contents) {
                             console.warn(`Failed to get contents for ${parsedPackage?.name}`);
                         }
@@ -182,7 +182,7 @@ async function prepareEntryModules() {
     for (const [name, parsedPackage] of Packages) {
         parsedPackage.writeEntryModules();
         const id = `pi${count++}`
-        const importString = moduleImport({ path: `meteor:package/${parsedPackage.name}`, id, });
+        const importString = moduleImport({ path: parsedPackage.entryFilePath('server'), id, });
         content.push(
             importString,
             `Package[${JSON.stringify(name)}] = ${id}`
