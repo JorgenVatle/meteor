@@ -17,5 +17,6 @@ export const PACKAGE_ENTRY_EXT = 'mjs';
 export const PACKAGE_RUNTIME_ENVIRONMENT = Path.join(PACKAGE_ENTRY_DIR, `globals.${PACKAGE_ENTRY_EXT}`);
 export const BUNDLE_ASSETS_DIR = Path.join(ROOT_DIR, 'src', 'BundleAssets');
 export const NPM_MASTER_MODULE = Path.join(PACKAGE_DIST_DIR, 'npm', 'index.mjs');
+export const NO_EXTERNALIZE_NAMESPACES = ['meteor', 'meteor:package', 'meteor:env'];
 
 export const DEBUG = !!process.env.DEBUG;
