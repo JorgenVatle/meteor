@@ -70,6 +70,7 @@ compilePackages().then(async () => {
         splitting: false,
         cjsInterop: false,
         target: 'node20',
+        platform: 'node',
         format: 'esm',
         skipNodeModulesBundle: true,
         noExternal: ['meteor'],
