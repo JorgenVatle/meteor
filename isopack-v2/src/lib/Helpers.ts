@@ -24,10 +24,10 @@ export function packagePath(name: string) {
  * @param config
  */
 export function moduleImport(config: ModuleImportConfig): string {
+    const comments: string[] = [];
     let from: string | undefined = config.fromDir;
     let path = config.path;
-    const comments: string[] = [];
-    let reExportId = '*';
+    let id: string = '';
     
     if (config.fromFile) {
         from = Path.dirname(config.fromFile);
@@ -35,6 +35,10 @@ export function moduleImport(config: ModuleImportConfig): string {
     
     if (from) {
         path = Path.resolve(from, path);
+    }
+    
+    if (config.id) {
+        id = `* as ${config.id}`
     }
     
     if (config.normalizeFileExtension) {
@@ -52,12 +56,13 @@ export function moduleImport(config: ModuleImportConfig): string {
         ].join('\n');
     }
     
-    if (config.id) {
-        reExportId = `* as ${config.id}`;
-    }
     
     if (config.reExport) {
-        return result(`export ${reExportId} from ${JSON.stringify(path)};`);
+        return result(`export ${id || '*'} from ${JSON.stringify(path)};`);
+    }
+    
+    if (id) {
+        result(`import ${id} from ${JSON.stringify(path)};`);
     }
     
     return result(`import ${JSON.stringify(path)};`);
