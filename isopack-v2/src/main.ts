@@ -4,7 +4,7 @@ import * as process from 'node:process';
 import { build } from 'tsup';
 import {
     BUNDLE_ASSETS_DIR,
-    DEBUG,
+    DEBUG, NPM_MASTER_MODULE,
     PACKAGE_DIST_DIR,
     PACKAGE_ENTRY_DIR,
     PACKAGE_TSCONFIG_FILE,
@@ -87,6 +87,24 @@ compilePackages().then(async () => {
     Logger.error(error);
     process.exit(1);
 });
+
+function createNpmMasterModule() {
+    const imports: string[] = [];
+    const exports: string[] = [];
+    let index = 0;
+    
+    for (const name of NpmDependencies.keys()) {
+        const importKey = `npm${index++}`;
+        imports.push(`import ${importKey} from ${JSON.stringify(name)}`);
+        exports.push(`${JSON.stringify(name)}: ${importKey}`);
+    }
+    
+    FS.mkdirSync(Path.dirname(NPM_MASTER_MODULE), { recursive: true });
+    FS.writeFileSync(NPM_MASTER_MODULE, [
+        imports.join('\n'),
+        'export default {', exports.join(', \n'), '}',
+    ].join('\n'))
+}
 
 async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
     FS.mkdirSync(TYPES_DIST_DIR, { recursive: true });
