@@ -13,10 +13,11 @@ export class PackageNamespace {
     public readonly impliedPackages = new Set<string>();
     public readonly modules = new Set<ScopedReference>();
     public readonly types = new Set<string>();
-    public readonly entrypoint: Partial<Record<Scope | string, string>> = {};
+    public readonly entrypoint: Partial<Record<Scope | string, string[]>> = {};
     
-    public setEntrypoint(scope: Scope | string, contentLines: string[]) {
-        this.entrypoint[scope] = contentLines.join('\n');
+    public pushToEntrypoint(scope: Scope | string, content: string[]) {
+        const entrypoint = this.entrypoint[scope] = this.entrypoint[scope] || [];
+        entrypoint.push(content.join('\n'));
     }
     
     public get srcDir() {

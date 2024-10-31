@@ -180,7 +180,7 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
             path: Path.join(PACKAGE_ENTRY_DIR, 'globals.js'),
         }));
         
-        parsedPackage.setEntrypoint(scope, importStrings);
+        parsedPackage.pushToEntrypoint(scope, importStrings);
         
         FS.writeFileSync(entryFilePath, importStrings.join('\n'));
         
