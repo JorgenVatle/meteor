@@ -206,7 +206,12 @@ async function prepareGlobalExports() {
         for (const [scope, ids] of parsedPackage.globalVariables.entries) {
             ids.forEach((id) => exports.add(id));
         }
-        globalModuleContent.push(`Object.assign(globalThis.Packages[${JSON.stringify(parsedPackage.name)}], { ${[...exports].join(', ')} })`);
+        const exportsContent = []
+        for (const key of exports) {
+            exportsContent.push(`${JSON.stringify(key)}: globalThis.${key}`);
+        }
+        
+        globalModuleContent.push(`Object.assign(globalThis.Packages[${JSON.stringify(parsedPackage.name)}], { ${exportsContent.join(',\n')} })`);
     }
     
     memoryModules.meteorRuntime = globalModuleContent.join('\n');
