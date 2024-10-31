@@ -192,28 +192,21 @@ async function prepareEntryModules() {
     FS.mkdirSync(PACKAGE_ENTRY_DIR, { recursive: true })
     FS.writeFileSync(Path.join(PACKAGE_ENTRY_DIR, `server.${PACKAGE_ENTRY_EXT}`), content.join('\n'));
 }
-let i = 0;
 async function prepareGlobalExports() {
     const globalModuleContent: string[] = [
         moduleImport({
             path: Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime.ts'),
-        })
+        }),
+        'globalThis.Packages = globalThis.Packages || {}',
     ];
+    const globalExports = new Map<string, Set<string>>();
     for (const [name, parsedPackage] of Packages) {
-        parsedPackage.globalVariables.entries.forEach(([scope, exports]) => {
-            if (!exports.length) return;
-            const importName = `gt${i++}`;
-            
-            globalModuleContent.push(
-                `// ${name}`,
-                moduleImport({ id: importName, path: `meteor/${parsedPackage.name}` }),
-                exports.map((id) => [
-                    `globalThis.${id} = ${importName}?.${id} || globalThis.${id}`,
-                    `Object.assign(globalThis.Packages, { '${parsedPackage.name}': {${id}} })`,
-                ]).flat().join('\n'),
-                ''
-            );
-        })
+        const exports = globalExports.get(name) || new Set<string>();
+        globalExports.set(parsedPackage.name, exports);
+        for (const [scope, ids] of parsedPackage.globalVariables.entries) {
+            ids.forEach((id) => exports.add(id));
+        }
+        globalModuleContent.push(`Object.assign(globalThis.Packages[${JSON.stringify(parsedPackage.name)}], { ${[...exports].join(', ')} })`);
     }
     
     memoryModules.meteorRuntime = globalModuleContent.join('\n');
