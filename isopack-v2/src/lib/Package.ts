@@ -119,15 +119,19 @@ export class PackageNamespace {
         this.impliedPackages.add(packageName);
     }
     
-    public export(name: string, context: ScopeOption | { testOnly: boolean } = 'common') {
+    public export(name: string | string[], context: ScopeOption | { testOnly: boolean } = 'common') {
         if (!Array.isArray(context) && typeof context !== 'string') {
             Logger.warn(`Received scope of wrong type!`, { scope: context });
-            this.globalVariables.add(['common', name]);
+            for (const exportName of normalizeOptionalArray(name)) {
+                this.globalVariables.add(['common', exportName]);
+            }
             return;
         }
         
         for (const scope of normalizeOptionalArray(context)) {
-            this.globalVariables.add([scope, name]);
+            for (const exportName of normalizeOptionalArray(name)) {
+                this.globalVariables.add([scope, exportName]);
+            }
         }
     }
     
