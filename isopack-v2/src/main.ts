@@ -11,7 +11,6 @@ import {
     PACKAGE_ENTRY_DIR,
     PACKAGE_ENTRY_EXT,
     PACKAGE_NPM_DIR,
-    PACKAGE_TEMP_ENTRY_DIR,
     PACKAGE_TSCONFIG_FILE,
     PACKAGE_TYPES_DIR,
 } from './Config';
@@ -134,7 +133,7 @@ async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
 
 async function prepareEntryModules() {
     const content: string[] = [
-        `globalThis.Package = {}`,
+        `export const Package = globalThis.Package = {}`,
     ];
     
     let count = 0;
@@ -149,7 +148,7 @@ async function prepareEntryModules() {
         )
     }
     
-    FS.mkdirSync(PACKAGE_TEMP_ENTRY_DIR, { recursive: true })
+    FS.mkdirSync(PACKAGE_ENTRY_DIR, { recursive: true })
     FS.writeFileSync(Path.join(PACKAGE_ENTRY_DIR, `server.${PACKAGE_ENTRY_EXT}`), content.join('\n'));
 }
 
