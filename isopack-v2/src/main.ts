@@ -10,7 +10,7 @@ import {
     PACKAGE_TSCONFIG_FILE,
     TYPES_DIST_DIR,
 } from './Config';
-import { moduleImport, packagePath } from './lib/Helpers';
+import { moduleImport, moduleReExport, packagePath } from './lib/Helpers';
 import { Logger } from './lib/Logger';
 import { meteor } from './plugin/EsbuildPluginMeteor';
 import { PackageCordova, PackageNpm, PackageNamespace, Packages, Scope, NpmDependencies } from './lib/Package';
@@ -185,7 +185,9 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         });
         
         if (scope !== 'common') {
-            importStrings.unshift(`export * from ${JSON.stringify('./common')}`);
+            importStrings.unshift(moduleReExport({
+                path: './common.js'
+            }));
         }
         
         importStrings.unshift(moduleImport({
