@@ -130,42 +130,11 @@ async function copyTypeDefinitions(parsedPackage: PackageNamespace) {
 }
 
 async function prepareEntryModules(parsedPackage: PackageNamespace) {
-    const scopes: Record<Scope, { imports: string[], }> = {
-        server: {
-            imports: [],
-        },
-        client: {
-            imports: [],
-        },
-        common: {
-            imports: [],
-        },
-    };
-    const prepareScope = (scope: Scope) => {
-        if (scopes[scope]) {
-            return;
-        }
-        scopes[scope] = {
-            imports: [],
-        }
-    }
-    for (const [scope, path] of parsedPackage.entryModule) {
-        prepareScope(scope);
-        scopes[scope].imports.push(path);
-    }
-    
-    for (const [scope, path] of parsedPackage.modules) {
-        prepareScope(scope);
-        scopes[scope].imports.push(path);
-    }
-    
     FS.mkdirSync(parsedPackage.entryDir, { recursive: true });
     
-    Object.entries(scopes).forEach(([scope, data]) => {
+    Object.keys(parsedPackage.entrypoint).forEach((scope) => {
         const entryFilePath = Path.join(parsedPackage.entryDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
-        const importStrings = data.imports.map((filePath) => moduleReExport({
-            path: Path.join(parsedPackage.srcDir, filePath)
-        }));
+        const importStrings = [...parsedPackage.entrypoint[scope] || []];
         
         Logger.debug({ [`${parsedPackage.name}.${scope}`]: importStrings })
         
@@ -179,8 +148,6 @@ async function prepareEntryModules(parsedPackage: PackageNamespace) {
         importStrings.push(moduleImport({
             path: Path.join(PACKAGE_ENTRY_DIR, 'globals.js'),
         }));
-        
-        parsedPackage.pushToEntrypoint(scope, importStrings);
         
         FS.writeFileSync(entryFilePath, importStrings.join('\n'));
         
