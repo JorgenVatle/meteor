@@ -85,6 +85,7 @@ compilePackages().then(async () => {
         platform: 'node',
         format: 'esm',
         skipNodeModulesBundle: true,
+        keepNames: true,
         noExternal: NO_EXTERNALIZE_NAMESPACES,
         esbuildPlugins: [
             {
@@ -133,7 +134,9 @@ compilePackages().then(async () => {
                     })
                     build.onEnd((build) => {
                         build.outputFiles?.forEach((file) => {
-                            const newContent = file.text.replace(/___\w+___\d? as /g, '');
+                            let newContent = file.text.replace(/!___\w+___\d? as /g, '//');
+                            // newContent = newContent.replace(/__\$/g, '');
+                            
                             file.contents = Uint8Array.from(Buffer.from(newContent));
                         })
                     })
