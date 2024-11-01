@@ -10,7 +10,7 @@ export class ScopedRecord<TValue = string> {
     constructor() {
     }
     
-    public get(scope: Scope): TValue[] {
+    public get(scope: Scope | string): TValue[] {
         if (!this.data[scope]) {
             this.data[scope] = [];
         }

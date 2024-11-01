@@ -2,7 +2,7 @@ import FS from 'node:fs';
 import Path from 'node:path';
 import { build } from 'tsup';
 import {
-    BUNDLE_ASSETS_DIR,
+    BUNDLE_ASSETS_DIR, NO_EXTERNALIZE_NAMESPACES,
     PACKAGE_ENTRY_DIR,
     PACKAGE_ENTRY_EXT,
     PACKAGE_PRE_BUNDLE_IN, PACKAGE_PRE_BUNDLE_OUT,
@@ -88,10 +88,17 @@ export class PackageNamespace {
     public bundleMeteorAssets() {
         FS.mkdirSync(Path.join(PACKAGE_PRE_BUNDLE_IN, this.name), { recursive: true });
         Object.entries(this.base).forEach(([scope, files]) => {
-            const list = [files];
+            const globalsPath = this.preBundleFilePath(`${scope}.globals`);
+            const globalsList = this.globalVariables.get(scope).map((key) => `globalThis.${key} = globalThis.${key}`).join('\n');
+            const list = [
+                moduleImport({ path: globalsPath }),
+                files
+            ];
             if (scope !== 'common') {
                 list.push(this.base.common)
             }
+            
+            FS.writeFileSync(globalsPath, globalsList);
             FS.writeFileSync(this.preBundleFilePath(scope), list.flat().join('\n') || '');
         });
     }
@@ -107,7 +114,7 @@ export class PackageNamespace {
             skipNodeModulesBundle: true,
             tsconfig: PACKAGE_TSCONFIG_FILE,
             config: false,
-            noExternal: ['meteor'],
+            noExternal: NO_EXTERNALIZE_NAMESPACES,
             esbuildPlugins: [
                 {
                     name: 'meteor-server',
