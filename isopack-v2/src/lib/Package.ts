@@ -63,7 +63,7 @@ export class PackageNamespace {
                 }
                 const altId = `___${id}___`;
                 content.push(
-                    `const ${altId} = ${id}`,
+                    `const ${altId} = ${this.globalKey}?.${id}`,
                     `export { ${altId} as ${id} }`
                 );
             });
