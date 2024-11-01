@@ -48,7 +48,7 @@ export class PackageNamespace {
                 }));
             }
             
-            content.push(moduleImport({
+            content.unshift(moduleImport({
                 path: PACKAGE_RUNTIME_ENVIRONMENT,
                 id: 'runtime'
             }));
