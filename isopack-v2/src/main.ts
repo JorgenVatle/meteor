@@ -131,6 +131,12 @@ compilePackages().then(async () => {
                             resolveDir: parsedPackage?.entryDir,
                         }
                     })
+                    build.onEnd((build) => {
+                        build.outputFiles?.forEach((file) => {
+                            const newContent = file.text.replace(/___\w+___\d? as /g, '');
+                            file.contents = Uint8Array.from(Buffer.from(newContent));
+                        })
+                    })
                 }
             }
         ],
@@ -244,6 +250,9 @@ async function prepareSingleBundleFile() {
         content.push(moduleReExport({
             path: parsedPackage.entryFilePath('server'),
         }));
+        // content.push(moduleReExport({
+        //     path: parsedPackage.entryFilePath('client'),
+        // }));
     })
     
     FS.writeFileSync(PACKAGE_MASTER_MODULE, content.join('\n'));
