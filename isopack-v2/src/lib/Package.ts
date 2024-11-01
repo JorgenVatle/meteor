@@ -100,6 +100,7 @@ export class PackageNamespace {
             format: 'cjs',
             cjsInterop: true,
             silent: true,
+            skipNodeModulesBundle: true,
             tsconfig: PACKAGE_TSCONFIG_FILE,
             config: false,
         })
