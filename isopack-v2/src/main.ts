@@ -9,12 +9,12 @@ import {
     NPM_MASTER_MODULE,
     PACKAGE_DIST_DIR,
     PACKAGE_ENTRY_DIR,
-    PACKAGE_ENTRY_EXT,
+    PACKAGE_ENTRY_EXT, PACKAGE_MASTER_MODULE,
     PACKAGE_NPM_DIR, PACKAGE_RUNTIME_ENVIRONMENT, PACKAGE_SRC_DIR,
     PACKAGE_TSCONFIG_FILE,
     PACKAGE_TYPES_DIR,
 } from './Config';
-import { moduleImport, packagePath } from './lib/Helpers';
+import { moduleImport, moduleReExport, packagePath } from './lib/Helpers';
 import { Logger } from './lib/Logger';
 import { NpmDependencies, PackageCordova, PackageNamespace, PackageNpm, Packages, Scope } from './lib/Package';
 
@@ -68,13 +68,14 @@ compilePackages().then(async () => {
     
     await prepareEntryModules();
     await prepareGlobalExports();
+    await prepareSingleBundleFile();
     console.dir(Packages.get('ddp-common'), { colors: true, depth: 3 });
     
     await build({
         name: 'built-packages',
         outDir: PACKAGE_DIST_DIR,
         clean: true,
-        entry: [PACKAGE_ENTRY_DIR],
+        entry: [PACKAGE_MASTER_MODULE],
         
         sourcemap: true,
         splitting: false,
@@ -235,6 +236,17 @@ async function prepareGlobalExports() {
     memoryModules.meteorRuntime = globalModuleContent.join('\n');
     
     FS.writeFileSync(PACKAGE_RUNTIME_ENVIRONMENT, memoryModules.meteorRuntime);
+}
+
+async function prepareSingleBundleFile() {
+    const content: string[] = [];
+    Packages.forEach((parsedPackage) => {
+        content.push(moduleReExport({
+            path: parsedPackage.entryFilePath('server'),
+        }));
+    })
+    
+    FS.writeFileSync(PACKAGE_MASTER_MODULE, content.join('\n'));
 }
 
 function installNpmDependencies() {

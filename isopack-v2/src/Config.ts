@@ -13,6 +13,7 @@ export const PACKAGE_TSCONFIG_FILE = Path.join(ROOT_DIR, 'tsconfig.packages.json
 export const PACKAGE_TYPES_DIR = Path.join(PACKAGE_TEMP_DIR, 'types', 'meteor');
 export const PACKAGE_NPM_DIR = Path.join(PACKAGE_TEMP_DIR, '.npm', 'package');
 export const PACKAGE_ENTRY_EXT = 'mjs';
+export const PACKAGE_MASTER_MODULE = Path.join(PACKAGE_ENTRY_DIR, 'master.mjs');
 
 export const PACKAGE_RUNTIME_ENVIRONMENT = Path.join(PACKAGE_ENTRY_DIR, `globals.${PACKAGE_ENTRY_EXT}`);
 export const BUNDLE_ASSETS_DIR = Path.join(ROOT_DIR, 'src', 'BundleAssets');
