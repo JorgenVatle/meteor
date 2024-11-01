@@ -16,20 +16,11 @@ class Npm {
 declare namespace globalThis {
     let Npm: Npm;
     let require: Npm['require'];
-    let _global: any;
     function defineProxy(key: string): any;
 }
 
 globalThis.Npm = new Npm();
 globalThis.require = globalThis.Npm.require;
-globalThis._global = new Proxy(globalThis, {
-    get(target, prop, receiver) {
-        console.log({ prop });
-        return Reflect.get(target, prop, receiver);
-    }
-});
-
-export const proxy = globalThis._global;
 
 globalThis.defineProxy = (key: string) => {
     return new Proxy(globalThis, {
