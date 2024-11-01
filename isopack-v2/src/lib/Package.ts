@@ -23,6 +23,10 @@ export class PackageNamespace {
         server: [],
     };
     public readonly entrypointRaw = new ScopedRecord();
+    protected moduleIndex = 0;
+    protected createModuleId(index?: number) {
+        return `m_${index || this.moduleIndex++}`
+    }
     
     public pushToEntrypoint(scope: Scope | string, content: string[]) {
         const entrypoint = this.entrypoint[scope] = this.entrypoint[scope] || [];
@@ -45,6 +49,13 @@ export class PackageNamespace {
                 path: PACKAGE_RUNTIME_ENVIRONMENT,
                 id: 'runtime'
             }));
+            
+            content.push('globalThis.Package = globalThis.Package || {}');
+            content.push(`globalThis.Package[${this.name}] = {}`);
+            
+            for (let i = 0; this.moduleIndex > i; i++) {
+                content.push(`Object.assign(globalThis.Package[${this.name}], ${this.createModuleId(i)})`);
+            }
             
             this.globalVariables.get(scope as Scope).forEach((id) => {
                 if (id === 'Random') {
@@ -123,10 +134,10 @@ export class PackageNamespace {
         for (const file of normalizeOptionalArray(files)) {
             for (const scope of normalizeOptionalArray(scopeOption)) {
                 this.modules.add([scope, file]);
+                const path = Path.join(this.srcDir, file)
+                const id = this.createModuleId();
                 this.pushToEntrypoint(scope, [
-                    moduleImport({
-                        path: Path.join(this.srcDir, file),
-                    })
+                    moduleImport({ path, id }),
                 ]);
             }
         }
@@ -152,12 +163,13 @@ export class PackageNamespace {
         }
     }
     
-    public mainModule(path: string, scope: Scope = 'common') {
-        this.entryModule.set(scope, path);
+    public mainModule(file: string, scope: Scope = 'common') {
+        this.entryModule.set(scope, file);
+        const path = Path.join(this.srcDir, file);
+        const id = this.createModuleId();
         this.pushToEntrypoint(scope, [
-            moduleReExport({
-                path: Path.join(this.srcDir, path),
-            })
+            moduleReExport({ path, }),
+            moduleImport({ path, id }),
         ]);
     }
     
