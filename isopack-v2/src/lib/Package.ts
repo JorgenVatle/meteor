@@ -88,7 +88,11 @@ export class PackageNamespace {
     public bundleMeteorAssets() {
         FS.mkdirSync(Path.join(PACKAGE_PRE_BUNDLE_IN, this.name), { recursive: true });
         Object.entries(this.base).forEach(([scope, files]) => {
-            FS.writeFileSync(this.preBundleFilePath(scope), files?.flat().join('\n') || '');
+            const list = [files];
+            if (scope !== 'common') {
+                list.push(this.base.common)
+            }
+            FS.writeFileSync(this.preBundleFilePath(scope), list.flat().join('\n') || '');
         });
     }
     
@@ -175,7 +179,7 @@ export class PackageNamespace {
                 this.pushToEntrypoint(scope, [
                     moduleImport({ path, id }),
                 ]);
-                (this.base[scope] || []).push(moduleImport({ path }))
+                (this.base[scope] || []).push(`require(${JSON.stringify(path)})`)
             }
         }
     }
@@ -209,7 +213,7 @@ export class PackageNamespace {
             moduleImport({ path, id }),
             `Object.assign(${this.globalKey}, ${id})`
         ]);
-        (this.base[scope] || []).push(moduleImport({ path }));
+        (this.base[scope] || []).push(`require(${JSON.stringify(path)})`);
     }
     
     public onTest(handler: (api: PackageNamespace) => void) {
