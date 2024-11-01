@@ -107,6 +107,21 @@ export class PackageNamespace {
             skipNodeModulesBundle: true,
             tsconfig: PACKAGE_TSCONFIG_FILE,
             config: false,
+            noExternal: ['meteor'],
+            esbuildPlugins: [
+                {
+                    name: 'meteor-server',
+                    setup(build) {
+                        build.onResolve({ filter: /^meteor\// }, (args) => {
+                            const [_, name, ...parts] = args.path.split('/');
+                            return {
+                                path: Path.join(PACKAGE_PRE_BUNDLE_OUT, name, 'server.js'),
+                                external: true,
+                            }
+                        })
+                    }
+                }
+            ]
         })
     }
     
