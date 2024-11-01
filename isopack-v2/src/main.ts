@@ -212,7 +212,12 @@ async function prepareGlobalExports() {
     ];
     
     function addGlobalScaffolding(packageNames: string[]) {
-        const defaults = JSON.stringify(Object.fromEntries(packageNames.map((key) => [key, {}])));
+        const packageObjects = JSON.stringify(Object.fromEntries(packageNames.map((key) => [key, {}])));
+        const exports = [...new Set<string>(
+            packageNames.map((name) => {
+                return Packages.get(name)!.globalVariables.entries.map(([scope, keys]) => keys);
+            }).flat(2)
+        )];
         const imports: string[] = packageNames.map((name, index) => moduleImport({
             path: Path.join(PACKAGE_ENTRY_DIR, name, 'server.mjs'),
             id: `i${index}`,
@@ -220,7 +225,8 @@ async function prepareGlobalExports() {
         
         // globalModuleContent.push(...imports);
         globalModuleContent.push(
-            `Object.assign(globalThis.Package, ${defaults})`,
+            `Object.assign(globalThis.Package, ${packageObjects})`,
+            ...exports.map((key) => `globalThis.${key} = globalThis.${key}`),
         )
     }
     
