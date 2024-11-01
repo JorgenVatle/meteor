@@ -51,7 +51,7 @@ export class PackageNamespace {
                     content.push('console.log(this)');
                     return;
                 }
-                content.push(`export const ${id} = ${id} || globalThis._global.${id}`);
+                content.push(`export const ${id} = globalThis.defineProxy("${id}")`);
             });
             
             FS.mkdirSync(Path.dirname(filePath), { recursive: true });
