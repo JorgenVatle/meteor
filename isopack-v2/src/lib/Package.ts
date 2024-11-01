@@ -1,6 +1,12 @@
 import FS from 'node:fs';
 import Path from 'node:path';
-import { BUNDLE_ASSETS_DIR, PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT, PACKAGE_RUNTIME_ENVIRONMENT } from '../Config';
+import {
+    BUNDLE_ASSETS_DIR,
+    PACKAGE_ENTRY_DIR,
+    PACKAGE_ENTRY_EXT,
+    PACKAGE_PRE_BUNDLE_DIR,
+    PACKAGE_RUNTIME_ENVIRONMENT,
+} from '../Config';
 import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
 import { Logger } from './Logger';
 import { ScopedRecord } from './ScopedRecord';
@@ -18,6 +24,11 @@ export class PackageNamespace {
     // Defined in package.js with api.export()
     public readonly globalVariables = new ScopedRecord();
     public readonly entrypoint: Partial<EntrypointRecord> = {
+        client: [],
+        common: [],
+        server: [],
+    };
+    public readonly base: Partial<EntrypointRecord> = {
         client: [],
         common: [],
         server: [],
@@ -73,6 +84,14 @@ export class PackageNamespace {
         }
     }
     
+    public bundleMeteorAssets() {
+        FS.mkdirSync(Path.join(PACKAGE_PRE_BUNDLE_DIR, this.name), { recursive: true });
+        Object.entries(this.base).forEach(([scope, files]) => {
+            FS.writeFileSync(this.preBundleFilePath(scope), files?.flat().join('\n') || '');
+        });
+        
+    }
+    
     public get srcDir() {
         return Path.dirname(packagePath(this.name));
     }
@@ -83,6 +102,10 @@ export class PackageNamespace {
     
     public entryFilePath(scope: Scope | string) {
         return Path.join(this.entryDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
+    }
+    
+    public preBundleFilePath(scope: Scope | string) {
+        return Path.join(PACKAGE_PRE_BUNDLE_DIR, this.name, `${scope}.${PACKAGE_ENTRY_EXT}`);
     }
     
     constructor(public readonly name: string) {
@@ -138,6 +161,7 @@ export class PackageNamespace {
                 this.pushToEntrypoint(scope, [
                     moduleImport({ path, id }),
                 ]);
+                (this.base[scope] || []).push(moduleReExport({ path }))
             }
         }
     }
@@ -171,6 +195,7 @@ export class PackageNamespace {
             moduleImport({ path, id }),
             `Object.assign(${this.globalKey}, ${id})`
         ]);
+        (this.base[scope] || []).push(moduleReExport({ path }));
     }
     
     public onTest(handler: (api: PackageNamespace) => void) {

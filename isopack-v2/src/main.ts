@@ -75,7 +75,7 @@ compilePackages().then(async () => {
         name: 'built-packages',
         outDir: PACKAGE_DIST_DIR,
         clean: true,
-        entry: [PACKAGE_MASTER_MODULE],
+        entry: [PACKAGE_ENTRY_DIR],
         
         sourcemap: true,
         splitting: false,
@@ -201,6 +201,7 @@ async function prepareEntryModules() {
     
     for (const [name, parsedPackage] of Packages) {
         parsedPackage.writeEntryModules();
+        parsedPackage.bundleMeteorAssets();
         const id = `pi${count++}`
         const importString = moduleImport({ path: parsedPackage.entryFilePath('server'), id, });
         content.push(
