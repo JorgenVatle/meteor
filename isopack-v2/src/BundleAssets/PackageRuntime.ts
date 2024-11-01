@@ -16,7 +16,16 @@ class Npm {
 declare namespace globalThis {
     let Npm: Npm;
     let require: Npm['require'];
+    let global: any;
 }
 
 globalThis.Npm = new Npm();
 globalThis.require = globalThis.Npm.require;
+globalThis.global = new Proxy(globalThis, {
+    get(target, prop, receiver) {
+        if (prop === 'global') {
+            return global;
+        }
+        return Reflect.get(target, prop, receiver);
+    }
+});
