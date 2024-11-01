@@ -52,9 +52,7 @@ export class PackageNamespace {
         for (const [scope, entrypoint] of Object.entries(this.entrypoint) as [Scope, string[]][]) {
             const filePath = this.entryFilePath(scope);
             const content = this.entrypointRaw.get(scope);
-            content.push(moduleImport({
-                path: Path.join(PACKAGE_PRE_BUNDLE_OUT, this.name, 'server.js'),
-            }), entrypoint.join('\n'));
+            content.push(entrypoint.join('\n'));
             
             if (scope !== 'common') {
                 content.unshift(moduleReExport({
@@ -66,6 +64,10 @@ export class PackageNamespace {
                 path: PACKAGE_RUNTIME_ENVIRONMENT,
                 id: 'runtime'
             }));
+            
+            content.unshift(moduleImport({
+                path: Path.join(PACKAGE_PRE_BUNDLE_OUT, this.name, 'server.js'),
+            }))
             
             content.push('globalThis.Package = globalThis.Package || {}');
             content.push(`${this.globalKey} = {}`);
