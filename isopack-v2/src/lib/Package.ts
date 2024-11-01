@@ -151,7 +151,11 @@ export class PackageNamespace {
     }
     
     constructor(public readonly name: string) {
-        Packages.set(name, this);
+        if (name.includes('@')) {
+            console.log({ name });
+            this.name = name.split('@')[0]
+        }
+        Packages.set(this.name, this);
     }
     
     public describe(config: {
