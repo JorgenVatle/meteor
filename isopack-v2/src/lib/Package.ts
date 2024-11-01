@@ -93,16 +93,19 @@ export class PackageNamespace {
         FS.mkdirSync(Path.join(PACKAGE_PRE_BUNDLE_IN, this.name), { recursive: true });
         Object.entries(this.base).forEach(([scope, files]) => {
             const globalsPath = this.preBundleFilePath(`${scope}.globals`);
-            const globalsList = this.globalVariables.get(scope).map((key) => `globalThis.${key} = globalThis.${key}`).join('\n');
+            const globalsList = this.globalVariables.get(scope).map((key) => `globalThis.${key} = globalThis.${key}`);
             const list = [
                 moduleImport({ path: globalsPath }),
                 files
             ];
             if (scope !== 'common') {
                 list.push(this.base.common)
+                globalsList.push(moduleImport({
+                    path: this.preBundleFilePath(`common.globals`),
+                }));
             }
             
-            FS.writeFileSync(globalsPath, globalsList);
+            FS.writeFileSync(globalsPath, globalsList.flat().join('\n'));
             FS.writeFileSync(this.preBundleFilePath(scope), list.flat().join('\n') || '');
         });
     }
