@@ -120,7 +120,7 @@ export class PackageNamespace {
             for (const scope of normalizeOptionalArray(scopeOption)) {
                 this.modules.add([scope, file]);
                 this.pushToEntrypoint(scope, [
-                    moduleReExport({
+                    moduleImport({
                         path: Path.join(this.srcDir, file),
                     })
                 ]);
