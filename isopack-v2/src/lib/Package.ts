@@ -24,6 +24,9 @@ export class PackageNamespace {
     };
     public readonly entrypointRaw = new ScopedRecord();
     protected moduleIndex = 0;
+    protected get globalKey() {
+        return `globalThis.Package[${JSON.stringify(this.name)}]`;
+    }
     protected createModuleId(index?: number) {
         return `m_${index ?? this.moduleIndex++}`
     }
@@ -51,11 +54,7 @@ export class PackageNamespace {
             }));
             
             content.push('globalThis.Package = globalThis.Package || {}');
-            content.push(`globalThis.Package[${this.name}] = {}`);
-            
-            for (let i = 0; this.moduleIndex > i; i++) {
-                content.push(`Object.assign(globalThis.Package[${JSON.stringify(this.name)}], ${this.createModuleId(i)})`);
-            }
+            content.push(`${this.globalKey} = {}`);
             
             this.globalVariables.get(scope as Scope).forEach((id) => {
                 if (id === 'Random') {
@@ -170,6 +169,7 @@ export class PackageNamespace {
         this.pushToEntrypoint(scope, [
             moduleReExport({ path, }),
             moduleImport({ path, id }),
+            `Object.assign(${this.globalKey}, ${id})`
         ]);
     }
     
