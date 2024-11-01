@@ -174,6 +174,7 @@ export class PackageNamespace {
         }
         
         this.dependencies.add(packageName.split('@')[0]);
+        this.base.common?.push(`require("meteor/${packageName}")`);
     }
     
     public addAssets(assets: string | string[], scope: Scope = 'common') {
