@@ -101,6 +101,7 @@ export class PackageNamespace {
             cjsInterop: true,
             silent: true,
             tsconfig: PACKAGE_TSCONFIG_FILE,
+            config: false,
         })
     }
     
