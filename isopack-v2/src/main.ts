@@ -78,8 +78,8 @@ compilePackages().then(async () => {
         
         sourcemap: true,
         splitting: false,
-        shims: true,
-        cjsInterop: true,
+        shims: false,
+        cjsInterop: false,
         target: 'node20',
         platform: 'node',
         format: 'esm',
@@ -112,13 +112,13 @@ compilePackages().then(async () => {
                         const parsedPackage = Packages.get(name);
                         if (args.path.includes('\0')) {
                             return {
-                                contents: parsedPackage?.entrypointRaw.get('server') || '',
+                                contents: parsedPackage?.entrypointRaw.get('server').join('\n') || '',
                             };
                         }
                         const contents = [
                             parsedPackage?.entrypointRaw.get('server'),
-                            `import * as s1 from 'meteor:package/${args.path}\0'`,
-                            `globalThis.Package[${JSON.stringify(name)}] = s1`,
+                            // `import * as s1 from 'meteor:package/${args.path}\0'`,
+                            // `globalThis.Package[${JSON.stringify(name)}] = s1`,
                         ].flat().join('\n');
                         if (!contents) {
                             console.warn(`Failed to get contents for ${parsedPackage?.name}`);
