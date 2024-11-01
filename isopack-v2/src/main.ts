@@ -116,7 +116,6 @@ compilePackages().then(async () => {
                             };
                         }
                         const contents = [
-                            memoryModules.meteorRuntime,
                             parsedPackage?.entrypointRaw.get('server'),
                             `import * as s1 from 'meteor:package/${args.path}\0'`,
                             `globalThis.Package[${JSON.stringify(name)}] = s1`,
