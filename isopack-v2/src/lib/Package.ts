@@ -96,7 +96,7 @@ export class PackageNamespace {
         await build({
             entry: [PACKAGE_PRE_BUNDLE_IN],
             outDir: PACKAGE_PRE_BUNDLE_OUT,
-            shims: true,
+            shims: false,
             format: 'cjs',
             cjsInterop: true,
             silent: true,
