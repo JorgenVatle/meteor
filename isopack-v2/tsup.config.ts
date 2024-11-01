@@ -16,6 +16,6 @@ export default defineConfig({
     noExternal: NO_EXTERNALIZE_NAMESPACES,
     format: 'esm',
     esbuildPlugins: [
-       meteor({ external: false }),
+       meteor({ external: true }),
     ]
 })
