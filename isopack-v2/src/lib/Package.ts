@@ -54,7 +54,7 @@ export class PackageNamespace {
             content.push(`globalThis.Package[${this.name}] = {}`);
             
             for (let i = 0; this.moduleIndex > i; i++) {
-                content.push(`Object.assign(globalThis.Package[${this.name}], ${this.createModuleId(i)})`);
+                content.push(`Object.assign(globalThis.Package[${JSON.stringify(this.name)}], ${this.createModuleId(i)})`);
             }
             
             this.globalVariables.get(scope as Scope).forEach((id) => {
