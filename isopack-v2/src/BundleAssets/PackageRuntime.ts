@@ -29,3 +29,5 @@ globalThis.global = new Proxy(globalThis, {
         return Reflect.get(target, prop, receiver);
     }
 });
+
+export const global = globalThis.global;
