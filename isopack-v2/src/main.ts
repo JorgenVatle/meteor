@@ -208,6 +208,7 @@ async function prepareGlobalExports() {
             path: Path.join(BUNDLE_ASSETS_DIR, 'PackageRuntime.ts'),
         }),
         'globalThis.Package = globalThis.Package || {}',
+        'globalThis.meteorEnv = {}',
     ];
     
     function addGlobalScaffolding(packageNames: string[]) {
@@ -224,44 +225,6 @@ async function prepareGlobalExports() {
     }
     
     addGlobalScaffolding([...Packages.keys()]);
-    
-    function addExports(packageName: string, exports: string[]) {
-        const packageIdentifier = `globalThis.Package[${JSON.stringify(packageName)}]`;
-        const exportLines = exports.map((id) => `${JSON.stringify(id)}: globalThis.${id}`);
-        const exportMap = ['{', exportLines.join(',\n'), '}'].join('\n')
-        globalModuleContent.push(`Object.assign(${packageIdentifier}, ${exportMap})`)
-    }
-    
-    function addGlobal(keys: string[]) {
-        globalModuleContent.push(`Object.assign(globalThis, { ${keys.map((id) => `${id}: globalThis.${id}`).join(', ')} })`);
-    }
-    
-    const placeholderContext: Record<string, any> = {
-        meteorEnv: null,
-        Package: {},
-    };
-    const globalExports = new Map<string, Set<string>>();
-    const global = new Set<string>();
-    for (const [name, parsedPackage] of Packages) {
-        const exports = globalExports.get(name) || new Set<string>();
-        globalExports.set(parsedPackage.name, exports);
-        parsedPackage.globalVariables.entries.map(([scope, keys]) => keys.forEach((key) => {
-            exports.add(key);
-            global.add(key);
-            
-            if (key.includes('Hook')) {
-                globalModuleContent.push('globalThis.Hook = console.log(globalThis.Hook) || class {}');
-                globalModuleContent.push(`setTimeout(() => console.log(globalThis.Hook), 1)`);
-            }
-        }));
-        addExports(name, [...exports]);
-    }
-    
-    addGlobal([...global]);
-    
-    Object.entries(placeholderContext).forEach(([key, value]) => {
-        globalModuleContent.push(`globalThis.${key} = globalThis.${key} || ${JSON.stringify(value)}`);
-    })
     
     memoryModules.meteorRuntime = globalModuleContent.join('\n');
     
