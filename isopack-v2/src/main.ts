@@ -304,7 +304,7 @@ function installNpmDependencies() {
     Logger.warn(missingDependencies.map((name) => ` | ${name}`).join('\n'));
     
     
-    const { error, stderr, stdout } = spawnSync(`npm`, ['i', '--save', ...missingDependencies], {
+    const { error, stderr, stdout } = spawnSync(`npm`, ['i', '--save', '--workspaces', 'false', ...missingDependencies], {
         cwd: PACKAGE_NPM_DIR,
         stdio: 'inherit',
     });
