@@ -1,10 +1,11 @@
 import FS from 'node:fs';
 import Path from 'node:path';
+import { build } from 'tsup';
 import {
     BUNDLE_ASSETS_DIR,
     PACKAGE_ENTRY_DIR,
     PACKAGE_ENTRY_EXT,
-    PACKAGE_PRE_BUNDLE_DIR,
+    PACKAGE_PRE_BUNDLE_IN, PACKAGE_PRE_BUNDLE_OUT,
     PACKAGE_RUNTIME_ENVIRONMENT,
 } from '../Config';
 import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
@@ -85,11 +86,18 @@ export class PackageNamespace {
     }
     
     public bundleMeteorAssets() {
-        FS.mkdirSync(Path.join(PACKAGE_PRE_BUNDLE_DIR, this.name), { recursive: true });
+        FS.mkdirSync(Path.join(PACKAGE_PRE_BUNDLE_IN, this.name), { recursive: true });
         Object.entries(this.base).forEach(([scope, files]) => {
             FS.writeFileSync(this.preBundleFilePath(scope), files?.flat().join('\n') || '');
         });
-        
+    }
+    
+    public static async bundleMeteorAssets() {
+        await build({
+            entry: [PACKAGE_PRE_BUNDLE_IN],
+            outDir: PACKAGE_PRE_BUNDLE_OUT,
+            silent: true,
+        })
     }
     
     public get srcDir() {
@@ -105,7 +113,7 @@ export class PackageNamespace {
     }
     
     public preBundleFilePath(scope: Scope | string) {
-        return Path.join(PACKAGE_PRE_BUNDLE_DIR, this.name, `${scope}.${PACKAGE_ENTRY_EXT}`);
+        return Path.join(PACKAGE_PRE_BUNDLE_IN, this.name, `${scope}.${PACKAGE_ENTRY_EXT}`);
     }
     
     constructor(public readonly name: string) {

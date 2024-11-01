@@ -69,6 +69,7 @@ compilePackages().then(async () => {
     await prepareEntryModules();
     await prepareGlobalExports();
     await prepareSingleBundleFile();
+    await PackageNamespace.bundleMeteorAssets();
     console.dir(Packages.get('ddp-common'), { colors: true, depth: 3 });
     
     await build({

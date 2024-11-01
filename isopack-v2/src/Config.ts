@@ -14,7 +14,8 @@ export const PACKAGE_TYPES_DIR = Path.join(PACKAGE_TEMP_DIR, 'types', 'meteor');
 export const PACKAGE_NPM_DIR = Path.join(PACKAGE_TEMP_DIR, '.npm', 'package');
 export const PACKAGE_ENTRY_EXT = 'mjs';
 export const PACKAGE_MASTER_MODULE = Path.join(PACKAGE_ENTRY_DIR, 'master.mjs');
-export const PACKAGE_PRE_BUNDLE_DIR = Path.join(PACKAGE_TEMP_DIR, 'pre-bundle');
+export const PACKAGE_PRE_BUNDLE_IN = Path.join(PACKAGE_TEMP_DIR, 'pre-bundle', 'in');
+export const PACKAGE_PRE_BUNDLE_OUT = Path.join(PACKAGE_TEMP_DIR, 'pre-bundle', 'out');
 
 
 export const PACKAGE_RUNTIME_ENVIRONMENT = Path.join(PACKAGE_ENTRY_DIR, `globals.${PACKAGE_ENTRY_EXT}`);
