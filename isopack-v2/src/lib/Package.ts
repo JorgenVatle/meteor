@@ -25,7 +25,7 @@ export class PackageNamespace {
     public readonly entrypointRaw = new ScopedRecord();
     protected moduleIndex = 0;
     protected createModuleId(index?: number) {
-        return `m_${index || this.moduleIndex++}`
+        return `m_${index ?? this.moduleIndex++}`
     }
     
     public pushToEntrypoint(scope: Scope | string, content: string[]) {
