@@ -52,7 +52,9 @@ export class PackageNamespace {
         for (const [scope, entrypoint] of Object.entries(this.entrypoint) as [Scope, string[]][]) {
             const filePath = this.entryFilePath(scope);
             const content = this.entrypointRaw.get(scope);
-            content.push(entrypoint.join('\n'));
+            content.push(moduleImport({
+                path: Path.join(PACKAGE_PRE_BUNDLE_OUT, this.name, 'server.js'),
+            }), entrypoint.join('\n'));
             
             if (scope !== 'common') {
                 content.unshift(moduleReExport({
