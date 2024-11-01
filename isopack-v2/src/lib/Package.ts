@@ -6,7 +6,7 @@ import {
     PACKAGE_ENTRY_DIR,
     PACKAGE_ENTRY_EXT,
     PACKAGE_PRE_BUNDLE_IN, PACKAGE_PRE_BUNDLE_OUT,
-    PACKAGE_RUNTIME_ENVIRONMENT,
+    PACKAGE_RUNTIME_ENVIRONMENT, PACKAGE_TSCONFIG_FILE,
 } from '../Config';
 import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
 import { Logger } from './Logger';
@@ -96,7 +96,11 @@ export class PackageNamespace {
         await build({
             entry: [PACKAGE_PRE_BUNDLE_IN],
             outDir: PACKAGE_PRE_BUNDLE_OUT,
+            shims: true,
+            format: 'cjs',
+            cjsInterop: true,
             silent: true,
+            tsconfig: PACKAGE_TSCONFIG_FILE,
         })
     }
     
@@ -169,7 +173,7 @@ export class PackageNamespace {
                 this.pushToEntrypoint(scope, [
                     moduleImport({ path, id }),
                 ]);
-                (this.base[scope] || []).push(moduleReExport({ path }))
+                (this.base[scope] || []).push(moduleImport({ path }))
             }
         }
     }
@@ -203,7 +207,7 @@ export class PackageNamespace {
             moduleImport({ path, id }),
             `Object.assign(${this.globalKey}, ${id})`
         ]);
-        (this.base[scope] || []).push(moduleReExport({ path }));
+        (this.base[scope] || []).push(moduleImport({ path }));
     }
     
     public onTest(handler: (api: PackageNamespace) => void) {
