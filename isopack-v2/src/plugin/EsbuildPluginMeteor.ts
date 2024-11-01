@@ -15,7 +15,7 @@ export function meteor({ external = true } = {}): Plugin {
             build.onResolve({ filter: /^meteor\// }, (args) => {
                 const [meteor, name, ...rest] = args.path.split('/');
                 const result: OnResolveResult = {
-                    path: Path.join(PACKAGE_ENTRY_DIR, name, 'server.mjs'),
+                    path: Path.join(PACKAGE_DIST_DIR, name, 'server.mjs'),
                     external,
                     sideEffects: true,
                 }
