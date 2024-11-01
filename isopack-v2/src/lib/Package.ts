@@ -1,6 +1,6 @@
 import FS from 'node:fs';
 import Path from 'node:path';
-import { PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT, PACKAGE_RUNTIME_ENVIRONMENT } from '../Config';
+import { BUNDLE_ASSETS_DIR, PACKAGE_ENTRY_DIR, PACKAGE_ENTRY_EXT, PACKAGE_RUNTIME_ENVIRONMENT } from '../Config';
 import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
 import { Logger } from './Logger';
 import { ScopedRecord } from './ScopedRecord';
@@ -39,18 +39,19 @@ export class PackageNamespace {
                 content.unshift(moduleReExport({
                     path: this.entryFilePath('common'),
                 }));
-            } else {
-                content.unshift(moduleImport({
-                    path: PACKAGE_RUNTIME_ENVIRONMENT,
-                }));
             }
+            
+            content.push(moduleImport({
+                path: PACKAGE_RUNTIME_ENVIRONMENT,
+                id: 'runtime'
+            }));
             
             this.globalVariables.get(scope as Scope).forEach((id) => {
                 if (id === 'Random') {
                     content.push('console.log(this)');
                     return;
                 }
-                content.push(`export const ${id} = globalThis.${id} || ${id}`);
+                content.push(`export const ${id} = ${id} || globalThis._global.${id}`);
             });
             
             FS.mkdirSync(Path.dirname(filePath), { recursive: true });
