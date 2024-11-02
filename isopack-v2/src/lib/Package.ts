@@ -58,9 +58,9 @@ export class PackageNamespace {
                 path: PACKAGE_RUNTIME_ENVIRONMENT,
             }))
             
-            content.push(moduleReExport({
+            content.push(moduleImport({
                 path: this.preBundleFilePathOut(scope),
-                id: 'pkg',
+                id: `pkg_${scope}`,
             }));
             
             content.push('globalThis.Package = globalThis.Package || {}');
