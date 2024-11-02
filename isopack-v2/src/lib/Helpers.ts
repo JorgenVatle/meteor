@@ -77,6 +77,10 @@ export function moduleImport(config: ModuleImportConfig): string {
     return result(`import ${JSON.stringify(path)}; /* Default import */`);
 }
 
+export function moduleRequire(config: Pick<ModuleImportConfig, 'path'>) {
+    return `require(${JSON.stringify(config.path)})`;
+}
+
 export function moduleReExport(config: Omit<ModuleImportConfig, 'reExport'>) {
     return moduleImport({
         ...config,
