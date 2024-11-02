@@ -72,7 +72,7 @@ export class PackageNamespace {
                     return;
                 }
                 content.push(
-                    `export const ${id} = pgk?.${id} ?? ${this.globalKey}?.${id}`,
+                    `export const ${id} = ${id} ?? pgk?.${id} ?? ${this.globalKey}?.${id}`,
                 );
             });
             
