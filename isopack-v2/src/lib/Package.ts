@@ -58,13 +58,14 @@ export class PackageNamespace {
                 path: PACKAGE_RUNTIME_ENVIRONMENT,
             }))
             
+            const bundleId = `pkg_${scope}`;
             content.push(moduleImport({
                 path: this.preBundleFilePathOut(scope),
                 id: `pkg_${scope}`,
             }));
             
             content.push('globalThis.Package = globalThis.Package || {}');
-            content.push(`${this.globalKey} = pkg`);
+            content.push(`${this.globalKey} = ${bundleId}`);
             
             [
                 ...this.globalVariables.get(scope as Scope),
@@ -75,7 +76,7 @@ export class PackageNamespace {
                     return;
                 }
                 content.push(
-                    `export const ${id} = ${id} ?? pgk?.${id} ?? ${this.globalKey}?.${id}`,
+                    `export const ${id} = ${id} ?? ${bundleId}?.${id} ?? ${this.globalKey}?.${id}`,
                 );
             });
             
