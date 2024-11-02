@@ -90,13 +90,16 @@ export class PackageNamespace {
         FS.mkdirSync(Path.join(PACKAGE_PRE_BUNDLE_IN, this.name), { recursive: true });
         Object.entries(this.base).forEach(([scope, files]) => {
             const globalsPath = this.preBundleFilePathIn(`${scope}.globals`);
-            const globalsList = this.globalVariables.get(scope).map((key) => `globalThis.${key} = globalThis.${key}`);
+            const globalsList = this.globalVariables.get(scope).map((key) => [
+                `globalThis.${key} = globalThis.${key}`,
+                `global.${key} = globalThis.${key}`
+            ]).flat();
             const list = [
                 moduleRequire({ path: globalsPath }),
                 files
             ];
             if (scope !== 'common') {
-                list.unshift(moduleRequire({
+                list.unshift(moduleImport({
                     path: this.preBundleFilePathIn(`common`),
                 }));
             }
