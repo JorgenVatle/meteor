@@ -2,11 +2,12 @@ import FS from 'node:fs';
 import Path from 'node:path';
 import { build } from 'tsup';
 import {
-    BUNDLE_ASSETS_DIR, NO_EXTERNALIZE_NAMESPACES,
+    NO_EXTERNALIZE_NAMESPACES,
     PACKAGE_ENTRY_DIR,
     PACKAGE_ENTRY_EXT,
-    PACKAGE_PRE_BUNDLE_IN, PACKAGE_PRE_BUNDLE_OUT,
-    PACKAGE_RUNTIME_ENVIRONMENT, PACKAGE_TSCONFIG_FILE,
+    PACKAGE_PRE_BUNDLE_IN,
+    PACKAGE_PRE_BUNDLE_OUT,
+    PACKAGE_TSCONFIG_FILE,
 } from '../Config';
 import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
 import { Logger } from './Logger';
@@ -49,38 +50,29 @@ export class PackageNamespace {
     }
     
     public writeEntryModules() {
-        for (const [scope, entrypoint] of Object.entries(this.entrypoint) as [Scope, string[]][]) {
+        for (const scope of ['client', 'server']) {
             const filePath = this.entryFilePath(scope);
             const content = this.entrypointRaw.get(scope);
-            content.push(entrypoint.join('\n'));
             
-            if (scope !== 'common') {
-                content.unshift(moduleReExport({
-                    path: this.entryFilePath('common'),
-                }));
-            }
-            
-            content.unshift(moduleImport({
-                path: PACKAGE_RUNTIME_ENVIRONMENT,
-                id: 'runtime'
+            content.push(moduleReExport({
+                path: this.preBundleFilePathOut(scope),
+                id: 'pkg',
             }));
             
-            content.unshift(moduleImport({
-                path: Path.join(PACKAGE_PRE_BUNDLE_OUT, this.name, 'server.js'),
-            }))
-            
+            content.push()
             content.push('globalThis.Package = globalThis.Package || {}');
-            content.push(`${this.globalKey} = {}`);
+            content.push(`${this.globalKey} = pkg`);
             
-            this.globalVariables.get(scope as Scope).forEach((id) => {
+            [
+                ...this.globalVariables.get(scope as Scope),
+                ...this.globalVariables.get('common'),
+            ].forEach((id) => {
                 if (id === 'Random') {
                     content.push('console.log(this)');
                     return;
                 }
-                const altId = `___${id}___`;
                 content.push(
-                    `const ${altId} = ${this.globalKey}?.${id}`,
-                    `export { ${altId} as ${id} }`
+                    `export const ${id} = pgk?.${id} ?? ${this.globalKey}?.${id}`,
                 );
             });
             
@@ -92,7 +84,7 @@ export class PackageNamespace {
     public bundleMeteorAssets() {
         FS.mkdirSync(Path.join(PACKAGE_PRE_BUNDLE_IN, this.name), { recursive: true });
         Object.entries(this.base).forEach(([scope, files]) => {
-            const globalsPath = this.preBundleFilePath(`${scope}.globals`);
+            const globalsPath = this.preBundleFilePathIn(`${scope}.globals`);
             const globalsList = this.globalVariables.get(scope).map((key) => `globalThis.${key} = globalThis.${key}`);
             const list = [
                 moduleImport({ path: globalsPath }),
@@ -101,12 +93,12 @@ export class PackageNamespace {
             if (scope !== 'common') {
                 list.push(this.base.common)
                 globalsList.push(moduleImport({
-                    path: this.preBundleFilePath(`common.globals`),
+                    path: this.preBundleFilePathIn(`common.globals`),
                 }));
             }
             
             FS.writeFileSync(globalsPath, globalsList.flat().join('\n'));
-            FS.writeFileSync(this.preBundleFilePath(scope), list.flat().join('\n') || '');
+            FS.writeFileSync(this.preBundleFilePathIn(scope), list.flat().join('\n') || '');
         });
     }
     
@@ -151,8 +143,12 @@ export class PackageNamespace {
         return Path.join(this.entryDir, `${scope}.${PACKAGE_ENTRY_EXT}`);
     }
     
-    public preBundleFilePath(scope: Scope | string) {
+    public preBundleFilePathIn(scope: Scope | string) {
         return Path.join(PACKAGE_PRE_BUNDLE_IN, this.name, `${scope}.${PACKAGE_ENTRY_EXT}`);
+    }
+    
+    public preBundleFilePathOut(scope: Scope | string) {
+        return Path.join(PACKAGE_PRE_BUNDLE_OUT, this.name, `${scope}.js`);
     }
     
     constructor(public readonly name: string) {
