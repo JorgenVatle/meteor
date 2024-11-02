@@ -77,6 +77,7 @@ export class PackageNamespace {
                 }
                 content.push(
                     `export const ${id} = ${id} ?? ${bundleId}?.${id} ?? ${this.globalKey}?.${id}`,
+                    `${this.globalKey}.${id} = ${id}`,
                 );
             });
             

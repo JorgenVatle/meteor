@@ -28,6 +28,10 @@ Package.onUse(function(api) {
 
   api.export('meteorInstall');
   api.export('verifyErrors');
+
+  api.export('imports');
+  api.export('cannotFindMeteorPackage')
+  api.export('makeInstaller');
 });
 
 Package.onTest(function(api) {
