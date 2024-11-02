@@ -6,7 +6,7 @@ import {
     PACKAGE_ENTRY_DIR,
     PACKAGE_ENTRY_EXT,
     PACKAGE_PRE_BUNDLE_IN,
-    PACKAGE_PRE_BUNDLE_OUT,
+    PACKAGE_PRE_BUNDLE_OUT, PACKAGE_RUNTIME_ENVIRONMENT,
     PACKAGE_TSCONFIG_FILE,
 } from '../Config';
 import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
@@ -54,12 +54,15 @@ export class PackageNamespace {
             const filePath = this.entryFilePath(scope);
             const content = this.entrypointRaw.get(scope);
             
+            content.push(moduleImport({
+                path: PACKAGE_RUNTIME_ENVIRONMENT,
+            }))
+            
             content.push(moduleReExport({
                 path: this.preBundleFilePathOut(scope),
                 id: 'pkg',
             }));
             
-            content.push()
             content.push('globalThis.Package = globalThis.Package || {}');
             content.push(`${this.globalKey} = pkg`);
             
