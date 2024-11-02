@@ -9,7 +9,7 @@ import {
     PACKAGE_PRE_BUNDLE_OUT, PACKAGE_RUNTIME_ENVIRONMENT,
     PACKAGE_TSCONFIG_FILE,
 } from '../Config';
-import { moduleImport, moduleReExport, normalizeOptionalArray, packagePath } from './Helpers';
+import { moduleImport, moduleReExport, moduleRequire, normalizeOptionalArray, packagePath } from './Helpers';
 import { Logger } from './Logger';
 import { ScopedRecord } from './ScopedRecord';
 
@@ -91,12 +91,12 @@ export class PackageNamespace {
             const globalsPath = this.preBundleFilePathIn(`${scope}.globals`);
             const globalsList = this.globalVariables.get(scope).map((key) => `globalThis.${key} = globalThis.${key}`);
             const list = [
-                moduleImport({ path: globalsPath }),
+                moduleRequire({ path: globalsPath }),
                 files
             ];
             if (scope !== 'common') {
                 list.push(this.base.common)
-                globalsList.push(moduleImport({
+                globalsList.push(moduleRequire({
                     path: this.preBundleFilePathIn(`common.globals`),
                 }));
             }
