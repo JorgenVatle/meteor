@@ -95,7 +95,7 @@ export class PackageNamespace {
                 files
             ];
             if (scope !== 'common') {
-                list.push(moduleRequire({
+                list.unshift(moduleRequire({
                     path: this.preBundleFilePathIn(`common`),
                 }));
             }
