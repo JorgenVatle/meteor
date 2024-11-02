@@ -95,9 +95,8 @@ export class PackageNamespace {
                 files
             ];
             if (scope !== 'common') {
-                list.push(this.base.common)
-                globalsList.push(moduleRequire({
-                    path: this.preBundleFilePathIn(`common.globals`),
+                list.push(moduleRequire({
+                    path: this.preBundleFilePathIn(`common`),
                 }));
             }
             
