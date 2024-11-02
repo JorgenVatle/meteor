@@ -64,9 +64,6 @@ export class PackageNamespace {
                 id: `pkg_${scope}`,
             }));
             
-            content.push('globalThis.Package = globalThis.Package || {}');
-            content.push(`${this.globalKey} = ${bundleId}`);
-            
             [
                 ...this.globalVariables.get(scope as Scope),
                 ...this.globalVariables.get('common'),
@@ -76,8 +73,7 @@ export class PackageNamespace {
                     return;
                 }
                 content.push(
-                    `export const ${id} = ${id} ?? ${bundleId}?.${id} ?? ${this.globalKey}?.${id}`,
-                    `${this.globalKey}.${id} = ${id}`,
+                    `export const ${id} = ${id} || ${bundleId}?.${id} || ${this.globalKey}?.${id}`,
                 );
             });
             
